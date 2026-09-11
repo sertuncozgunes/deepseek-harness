@@ -37,7 +37,17 @@ export function apply(ctx: Context): void {
     order: ctx.systemPrompt.getSectionOrder('TOOL_CORDIS'),
     text: CORDIS_SYSTEM_PROMPT,
   })
+  // One process hosts every mounted preset, and two presets may both carry
+  // this row (the shipped `cordis` plus a user copy). The Host inspect
+  // providers are requester-scoped — their queries receive the asking Agent,
+  // so a single registration serves every session — while the registry is
+  // process-global and rejects a duplicate id. Skip ids another mount already
+  // registered instead of failing the second preset's mount.
+  const registeredIds = new Set(
+    ctx.cordisInspect.list().filter(entry => entry.platform === 'host').map(entry => entry.id),
+  )
   for (const provider of hostInspectProviders(ctx)) {
+    if (registeredIds.has(provider.manifest.id)) continue
     ctx.effect(() => ctx.cordisInspect.register(provider), `tool-cordis: inspect ${provider.manifest.id}`)
   }
 
