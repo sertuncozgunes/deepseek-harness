@@ -99,22 +99,29 @@ async function bench(opts: BenchOptions = {}) {
       return () => { registered.delete(key) }
     },
   })
-  // Durable favorites scope: in-memory section + subscriber fan-out.
+  // Durable settings scopes: in-memory sections keyed by namespace + fan-out.
   const favoritesSection: { favorites?: string[] } = {}
-  const favoritesSubs: Array<() => void> = []
+  const recentSection: { recent?: string[] } = {}
+  const sections: Record<string, { favorites?: string[]; recent?: string[] }> = {
+    'command-favorites': favoritesSection,
+    'command-recent': recentSection,
+  }
+  const settingsSubs = new Map<string, Array<() => void>>()
   ctx.provide('settingsScope', {
-    bind: () => ({
-      getSnapshot: () => ({ value: favoritesSection }),
+    bind: ({ namespace }: { namespace: string }) => ({
+      getSnapshot: () => ({ value: sections[namespace] }),
       subscribe: (fn: () => void) => {
-        favoritesSubs.push(fn)
+        const subs = settingsSubs.get(namespace) ?? []
+        subs.push(fn)
+        settingsSubs.set(namespace, subs)
         return () => {
-          const at = favoritesSubs.indexOf(fn)
-          if (at >= 0) favoritesSubs.splice(at, 1)
+          const at = subs.indexOf(fn)
+          if (at >= 0) subs.splice(at, 1)
         }
       },
-      set: async (_field: string, value: unknown) => {
-        favoritesSection.favorites = value as string[]
-        for (const fn of [...favoritesSubs]) fn()
+      set: async (field: string, value: unknown) => {
+        ;(sections[namespace] as Record<string, unknown>)[field] = value
+        for (const fn of [...(settingsSubs.get(namespace) ?? [])]) fn()
       },
     }),
   } as never)
@@ -166,9 +173,11 @@ async function bench(opts: BenchOptions = {}) {
   }
   const favoritesSource = registered.get('/ favorites')
   if (favoritesSource === undefined) throw new Error('favorites source not registered')
+  const recentSource = registered.get('/ recent')
+  if (recentSource === undefined) throw new Error('recent source not registered')
   return {
-    ctx, fiber, command, source, favoritesSource, mint, warm, listCalls, executeCalls,
-    executions, registered, notices, remote, favoritesSection,
+    ctx, fiber, command, source, favoritesSource, recentSource, mint, warm, listCalls, executeCalls,
+    executions, registered, notices, remote, favoritesSection, recentSection,
   }
 }
 
@@ -225,6 +234,67 @@ describe('command favorites', () => {
   })
 })
 
+describe('command recent', () => {
+  /** Two bare host commands so both execute (not claim) on bare enter. */
+  const TWO_BARE = (): BenchOptions => ({
+    commands: () => Promise.resolve({
+      commands: [
+        { name: 'plan', description: 'bare kind' },
+        { name: 'deploy', description: 'bare kind' },
+      ],
+    }),
+  })
+
+  it('registers the recent source above favorites and the command group', async () => {
+    const b = await bench()
+    expect(b.recentSource.order).toBe(-2)
+    expect(b.recentSource.name).toBe('recent')
+  })
+
+  it('records an executed bare command at the front, deduplicated', async () => {
+    const b = await bench(TWO_BARE())
+    const session = proj('s1')
+
+    expect(await b.recentSource.candidates(session, req(''))).toEqual([])
+
+    await b.source.matchEnter!(session, '/plan', new AbortController().signal, { attachments: 0 })
+    await b.source.matchEnter!(session, '/deploy', new AbortController().signal, { attachments: 0 })
+    await b.source.matchEnter!(session, '/plan', new AbortController().signal, { attachments: 0 })
+    await flush()
+
+    // '/plan' executed twice dedups to first, then 'deploy'.
+    expect(b.recentSection.recent).toEqual(['plan', 'deploy'])
+
+    const rows = await b.recentSource.candidates(session, req(''))
+    expect(rows.map(r => r.name)).toEqual(['plan', 'deploy'])
+  })
+
+  it('excludes pinned commands from the recent group', async () => {
+    const b = await bench(TWO_BARE())
+    const session = proj('s1')
+
+    await b.source.matchEnter!(session, '/plan', new AbortController().signal, { attachments: 0 })
+    await b.source.matchEnter!(session, '/deploy', new AbortController().signal, { attachments: 0 })
+    await flush()
+
+    // Pin '/plan'; the recent group drops it, keeping only 'deploy'.
+    const all = await b.source.candidates(session, req(''))
+    all.find(r => r.name === 'plan')!.favorite!.onToggle()
+    expect(b.favoritesSection.favorites).toEqual(['plan'])
+
+    const rows = await b.recentSource.candidates(session, req(''))
+    expect(rows.map(r => r.name)).toEqual(['deploy'])
+  })
+
+  it('dispatches a recent pick through the command pipeline', async () => {
+    const b = await bench(TWO_BARE())
+    const session = proj('s1')
+    await b.source.matchEnter!(session, '/plan', new AbortController().signal, { attachments: 0 })
+    menuPick(b.recentSource, 'plan', session, 5)
+    expect(b.executeCalls.some(c => c.sessionId === sid('s1') && c.line === '/plan')).toBe(true)
+  })
+})
+
 const themeUi = (over: Partial<PopupSelectSpec> = {}): PopupSelectSpec => ({
   kind: 'popupSelect',
   options: () => Promise.resolve([{ id: 'dark', label: 'Dark' }]),
@@ -243,13 +313,16 @@ const themeContribution = (over: Partial<CommandContribution> = {}): CommandCont
 const req = (query: string, position: 'leading' | 'inline' = 'leading') =>
   ({ query, position, drilled: false, signal: new AbortController().signal })
 
+/** Flush pending microtasks + one macrotask so the fire-and-forget execute chain settles. */
+const flush = () => new Promise<void>(r => setTimeout(r, 0))
+
 describe('registration', () => {
   it('registers the "/" source with matchSpace/matchEnter/warm hooks and removes it on fiber disposal', async () => {
     const { registered, source, fiber } = await bench()
     expect(typeof source.matchSpace).toBe('function')
     expect(typeof source.matchEnter).toBe('function')
     expect(typeof source.warm).toBe('function')
-    expect([...registered.keys()]).toEqual(['/ favorites', '/ command'])
+    expect([...registered.keys()]).toEqual(['/ recent', '/ favorites', '/ command'])
     await fiber.dispose()
     expect(registered.size).toBe(0)
   })

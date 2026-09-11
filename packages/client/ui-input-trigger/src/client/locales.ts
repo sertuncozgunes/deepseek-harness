@@ -18,6 +18,7 @@ export const zh = {
   'favorites': '收藏',
   'favorites.pin': '收藏命令 {name}',
   'favorites.unpin': '取消收藏命令 {name}',
+  'recent': '最近使用',
 } satisfies Record<string, string>
 
 /** The slash.menu namespace key union. */
@@ -37,6 +38,7 @@ export const en = {
   'favorites': 'Favorites',
   'favorites.pin': 'Pin command {name}',
   'favorites.unpin': 'Unpin command {name}',
+  'recent': 'Recent',
 } satisfies Record<MenuKey, string>
 
 /** Turkish dictionary, checked complete against the zh key set. */
@@ -53,4 +55,5 @@ export const tr= {
   'favorites': 'Favoriler',
   'favorites.pin': 'Komutu sabitle: {name}',
   'favorites.unpin': 'Sabitlemeyi kaldır: {name}',
-}
+  'recent': 'Son kullanılanlar',
+} satisfies Record<MenuKey, string>

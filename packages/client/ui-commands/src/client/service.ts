@@ -31,6 +31,9 @@ import type { CommandContribution, CommandDecoration, CommandUiContract } from '
 import {
   COMMAND_FAVORITES_FIELD, COMMAND_FAVORITES_NS, type CommandFavoritesSettings,
 } from '../command-favorites-settings.ts'
+import {
+  COMMAND_RECENT_FIELD, COMMAND_RECENT_MAX, COMMAND_RECENT_NS, type CommandRecentSettings,
+} from '../command-recent-settings.ts'
 import type { CommandDescriptor } from './directory.ts'
 import { CommandDirectory } from './directory.ts'
 import { PopupSelectController } from './popup.ts'
@@ -79,6 +82,10 @@ export class CommandUiRuntime extends Service implements CommandUiContract {
   private settings!: SettingsScope<CommandFavoritesSettings>
   /** Pinned command names in document order. */
   private favorites: Set<string> = new Set()
+  /** Durable recent-command scope (assigned in the constructor). */
+  private recentSettings!: SettingsScope<CommandRecentSettings>
+  /** Recent command names, most recent first. */
+  private recent: string[] = []
 
   /**
    * @param ctx - owning root context (plugin fiber; the service registers
@@ -106,6 +113,38 @@ export class CommandUiRuntime extends Service implements CommandUiContract {
     ctx.effect(() => this.settings.subscribe(() => {
       this.favorites = new Set(this.settings.getSnapshot().value?.favorites ?? [])
     }), 'ui-commands: favorites scope adoption')
+
+    // Recent commands: the durable recency list backs the menu's Recent group
+    // (most recent first). Reads prefer the bound scope; writes go through it
+    // so the Host document stays the single source of truth.
+    this.recentSettings = ctx.settingsScope.bind<CommandRecentSettings>({ namespace: COMMAND_RECENT_NS })
+    this.recent = this.recentSettings.getSnapshot().value?.recent ?? []
+    ctx.effect(() => this.recentSettings.subscribe(() => {
+      this.recent = this.recentSettings.getSnapshot().value?.recent ?? []
+    }), 'ui-commands: recent scope adoption')
+
+    // Recent group renders before favorites (order -2); its candidates are the
+    // most recently executed commands, excluding any that are already pinned
+    // (a pinned row already leads through the favorites group).
+    ctx.effect(() => inputTriggers.registerSource({
+      trigger: '/',
+      name: 'recent',
+      order: -2,
+      showGroupTitle: true,
+      candidates: async (session, req) => {
+        const all = await this.candidates(session, req)
+        const byName = new Map(all.map(c => [c.name, c]))
+        const pinned = this.favorites
+        // Keep the durable recency order; skip names no longer resolved or
+        // already pinned. Most recent first is the source's natural order.
+        return this.recent.flatMap((name) => {
+          const row = byName.get(name)
+          return row === undefined || pinned.has(name) ? [] : [row]
+        })
+      },
+      onPick: pick => this.dispatch(pick),
+      warm: (session) => { this.directory.warm(session.sessionId) },
+    }), 'command: recent source')
 
     // Favorites group renders first (order -1); its candidates are the pinned
     // commands, reusing the same synthesis + dispatch as the command group.
@@ -238,6 +277,15 @@ export class CommandUiRuntime extends Service implements CommandUiContract {
       ? [...this.favorites].filter(n => n !== name)
       : [...this.favorites, name]
     void this.settings.set(COMMAND_FAVORITES_FIELD, next)
+  }
+
+  /** Record one executed command at the front of the recency list (deduped, capped). */
+  private recordRecent(name: string): void {
+    // Update the local mirror optimistically so consecutive executions in the
+    // same tick observe each other; the durable write rides the settings scope
+    // and its subscriber refresh reconciles the mirror afterward.
+    this.recent = [name, ...this.recent.filter(n => n !== name)].slice(0, COMMAND_RECENT_MAX)
+    void this.recentSettings.set(COMMAND_RECENT_FIELD, this.recent)
   }
 
   /**
@@ -444,6 +492,7 @@ export class CommandUiRuntime extends Service implements CommandUiContract {
 
   /** Publish the local acknowledgment without letting an observer change command admission. */
   private notifyExecuted(sessionId: SessionId, name: string, result: CommandResult): void {
+    this.recordRecent(name)
     const args = ['command/executed', sessionId, name, result]
     for (const listener of this.ctx.events.dispatch('emit', args) as Array<(...listenerArgs: unknown[]) => unknown>) {
       try {
