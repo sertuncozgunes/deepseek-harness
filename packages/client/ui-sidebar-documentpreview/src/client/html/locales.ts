@@ -23,3 +23,11 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
     documentHtml: HtmlPreviewKey
   }
 }
+
+/** Turkish dictionary, checked complete against the zh key set. */
+export const tr= {
+  'title': 'HTML',
+  'frame': 'HTML belge önizlemesi',
+  'loading': 'HTML önizlemesi hazırlanıyor…',
+  'failed': 'Bu HTML belgesi önizlenemedi.',
+}

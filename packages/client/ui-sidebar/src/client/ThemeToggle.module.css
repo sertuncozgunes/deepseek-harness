@@ -1,0 +1,31 @@
+/* Sidebar-foot theme quick-toggle: 28px icon button on the sidebar's own
+   surface, ghost at rest, hover/active from the shared interactive tokens,
+   and the canonical keyboard-focus ring. */
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 14px;
+  corner-shape: round;
+  background: transparent;
+  color: var(--dsw-alias-label-secondary);
+  cursor: pointer;
+}
+
+.toggle:hover {
+  background: var(--dsw-alias-interactive-bg-hover);
+  color: var(--dsw-alias-label-primary);
+}
+
+.toggle:active {
+  background: var(--dsw-alias-interactive-bg-active);
+}
+
+.toggle:focus-visible {
+  outline: 2px solid var(--dsw-alias-state-business-primary);
+  outline-offset: 2px;
+}

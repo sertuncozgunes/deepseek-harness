@@ -42,6 +42,7 @@ function providePresentation(ctx: Context): PresentationCapture {
   slots.register({
     name: 'root',
     children: { 'tool.call.toolview': { kind: 'keyed', scope: 'session' } },
+    tr: expect.anything(),
   } as never, () => null)
   const capture: PresentationCapture = {
     slots,
@@ -142,6 +143,7 @@ describe('apply', () => {
           'row.inspect': 'Inspect',
           'menu.userOnly': 'user-only',
         },
+        tr: expect.anything(),
       },
     }])
   })

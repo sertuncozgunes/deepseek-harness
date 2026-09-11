@@ -33,3 +33,16 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
     sidebarPdf: PdfLocaleKey
   }
 }
+
+/** Turkish dictionary, checked complete against the zh key set. */
+export const tr= {
+  'title': 'PDF',
+  'pageImage': 'PDF {page}. sayfa',
+  'loading': 'PDF açılıyor…',
+  'rendering': 'Sayfa işleniyor…',
+  'failed': 'PDF görüntülenemiyor: {message}',
+  'password': 'Bu PDF parola gerektiriyor; parola korumalı önizlemeler desteklenmiyor.',
+  'workerFailed': 'PDF işleme süreci devam edemedi. Lütfen yeniden deneyin.',
+  'unsupported': 'PDF önizlemesi dosyanın tam içeriğini gerektirir.',
+  'retry': 'Yeniden dene',
+}

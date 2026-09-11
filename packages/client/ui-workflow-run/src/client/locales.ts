@@ -49,3 +49,25 @@ export const en: Record<WorkflowRunKey, string> = {
 
 /** Union of this namespace's dictionary keys. */
 export type WorkflowRunKey = keyof typeof zh
+
+/** Turkish dictionary (same key set). */
+export const tr: Record<WorkflowRunKey, string> = {
+  'run.title': '{name}',
+  'run.members.one': '{count} üye',
+  'run.members.other': '{count} üye',
+  'run.empty': 'Üye başlatılmadı',
+  'phase.unassigned': 'Aşamasız',
+  'phase.empty': 'Boş aşama adı',
+  'statusCount.running': 'Çalışıyor {count}',
+  'statusCount.completed': 'Tamamlandı {count}',
+  'statusCount.failed': 'Başarısız {count}',
+  'statusCount.cancelled': 'İptal edildi {count}',
+  'statusCount.interrupted': 'Kesildi {count}',
+  'member.empty': 'Boş üye adı',
+  'member.open': '{name} aç',
+  'status.running': 'Çalışıyor',
+  'status.completed': 'Tamamlandı',
+  'status.failed': 'Başarısız',
+  'status.cancelled': 'İptal edildi',
+  'status.interrupted': 'Kesildi',
+}

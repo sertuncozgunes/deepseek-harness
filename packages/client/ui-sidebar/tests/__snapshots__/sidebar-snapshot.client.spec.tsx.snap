@@ -77,7 +77,22 @@ exports[`sidebar shell snapshots > renders the collapsed rail after the crossfad
         <div
           data-slot="sidebar.footer.action"
           style="display: contents;"
-        />
+        >
+          <button
+            aria-label="Switch to dark theme"
+            class="toggle"
+            type="button"
+          >
+            <svg
+              data-content="7bc51827"
+              fill="none"
+              height="16"
+              viewBox="0 0 16 16"
+              width="16"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </button>
+        </div>
       </div>
       <div
         class="settingsArea"
@@ -207,7 +222,22 @@ exports[`sidebar shell snapshots > renders the expanded column (wordmark, capsul
         <div
           data-slot="sidebar.footer.action"
           style="display: contents;"
-        />
+        >
+          <button
+            aria-label="Switch to dark theme"
+            class="toggle"
+            type="button"
+          >
+            <svg
+              data-content="7bc51827"
+              fill="none"
+              height="16"
+              viewBox="0 0 16 16"
+              width="16"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </button>
+        </div>
       </div>
       <div
         class="settingsArea"
@@ -337,7 +367,22 @@ exports[`sidebar shell snapshots > renders the expanded column in the default lo
         <div
           data-slot="sidebar.footer.action"
           style="display: contents;"
-        />
+        >
+          <button
+            aria-label="切换到深色主题"
+            class="toggle"
+            type="button"
+          >
+            <svg
+              data-content="7bc51827"
+              fill="none"
+              height="16"
+              viewBox="0 0 16 16"
+              width="16"
+              xmlns="http://www.w3.org/2000/svg"
+            />
+          </button>
+        </div>
       </div>
       <div
         class="settingsArea"

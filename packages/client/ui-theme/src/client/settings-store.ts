@@ -4,7 +4,7 @@
  * row components read via props.useStore.
  */
 import { defineStore, type EngineStoreHandle } from '@deepseek-ai/dsh-client-store'
-import { DEFAULT_FONT_SIZE, type ThemePreference } from '../theme-settings.ts'
+import { DEFAULT_ACCENT, DEFAULT_FONT_SIZE, type AccentId, type ThemePreference } from '../theme-settings.ts'
 
 /** Store state mirrored from the theme snapshot. */
 export interface AppearanceRowState {
@@ -60,6 +60,36 @@ export function createFontSizeRowStore(): EngineStoreHandle<FontSizeRowState, Fo
       sync: (d, fontSize: number, revision: number) => {
         if (revision <= d.revision) return
         d.fontSize = fontSize
+        d.revision = revision
+      },
+    },
+  })
+}
+
+/** Store state mirrored from the theme snapshot's accent. */
+export interface AccentRowState {
+  /** Persisted accent id. */
+  accent: AccentId
+  /** Service revision; -1 until first sync so revision 0 lands as a change. */
+  revision: number
+}
+
+/** Declared action shape giving the exported factory a stable return type. */
+type AccentRowActions = {
+  sync: (draft: AccentRowState, accent: AccentId, revision: number) => void
+}
+
+/**
+ * Declares the Accent row state and write surface.
+ * @returns the store handle.
+ */
+export function createAccentRowStore(): EngineStoreHandle<AccentRowState, AccentRowActions> {
+  return defineStore({
+    init: (): AccentRowState => ({ accent: DEFAULT_ACCENT, revision: -1 }),
+    actions: {
+      sync: (d, accent: AccentId, revision: number) => {
+        if (revision <= d.revision) return
+        d.accent = accent
         d.revision = revision
       },
     },

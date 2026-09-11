@@ -17,6 +17,66 @@ const COOKIE_PREFIX = 'dsh-auth-'
 const COOKIE_PAYLOAD_VERSION = 1
 const STORED_SECRET_VERSION = 1
 const BASE64URL_PATTERN = /^[A-Za-z0-9_-]*$/
+
+/**
+ * The 401 index page an unauthenticated browser renders. Self-contained:
+ * no external assets, minimal inline styling in the brand ink, bilingual
+ * copy (English + Turkish) so both user bases can act on the instruction
+ * without a locale runtime — the locale tree only boots once the browser
+ * holds a valid session cookie.
+ */
+const UNAUTHORIZED_PAGE = `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DeepSeek Harness — authentication required</title>
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background: #f7f8fa;
+    color: #1c1f26;
+  }
+  @media (prefers-color-scheme: dark) {
+    body { background: #151517; color: #f9fafb; }
+  }
+  main {
+    max-width: 480px;
+    margin: 24px;
+    padding: 28px 32px;
+    border: 1px solid rgba(0,0,0,.1);
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 8px 32px rgba(15,17,21,.08);
+  }
+  @media (prefers-color-scheme: dark) {
+    main { background: #1c1c1e; border-color: rgba(255,255,255,.08); }
+  }
+  h1 { margin: 0 0 6px; font-size: 20px; line-height: 28px; font-weight: 600; }
+  .brand { color: #4176e6; letter-spacing: .02em; }
+  p { margin: 6px 0 0; font-size: 14px; line-height: 22px; color: #555a66; }
+  @media (prefers-color-scheme: dark) {
+    p { color: #aeb4c2; }
+  }
+  code { font-family: 'SF Mono', Menlo, Consolas, monospace; font-size: 13px; }
+</style>
+</head>
+<body>
+<main>
+  <h1><span class="brand">DeepSeek Harness</span> — kimlik doğrulaması gerekli</h1>
+  <p>dsh web authentication required; reopen the URL printed by <code>dsh web</code>.</p>
+  <p>Kimlik doğrulaması gerekli; <code>dsh web</code> komutunun yazdırdığı URL'yi yeniden açın.</p>
+</main>
+</body>
+</html>
+`
+
 const PROCESS_LAUNCH_TOKENS = new WeakMap<object, string>()
 
 interface StoredSecretPayload {
@@ -304,10 +364,8 @@ export class BrowserAuth {
   private writeUnauthorized(req: ConnectionIndexRequest, res: ConnectionIndexResponse): void {
     res.writeHead(401, {
       'cache-control': 'no-store',
-      'content-type': 'text/plain; charset=utf-8',
+      'content-type': 'text/html; charset=utf-8',
     })
-    res.end(req.method === 'HEAD'
-      ? undefined
-      : 'dsh web authentication required; reopen the URL printed by dsh web.\n')
+    res.end(req.method === 'HEAD' ? undefined : UNAUTHORIZED_PAGE)
   }
 }

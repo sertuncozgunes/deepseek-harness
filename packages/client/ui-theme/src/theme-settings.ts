@@ -14,6 +14,18 @@ export const THEME_PREFERENCE_FIELD = 'preference'
 /** Field carrying the conversation content font size. */
 export const FONT_SIZE_FIELD = 'fontSize'
 
+/** Field carrying the selected accent color. */
+export const ACCENT_FIELD = 'accent'
+
+/** Selectable accent ids ('default' removes the override layer). */
+export const ACCENT_IDS = ['default', 'blue', 'deepseek', 'red'] as const
+
+/** One selectable accent id. */
+export type AccentId = typeof ACCENT_IDS[number]
+
+/** Accent applied when the user-settings document has no override. */
+export const DEFAULT_ACCENT: AccentId = 'default'
+
 /** Theme preference persisted by the product Appearance row. */
 export type ThemePreference = typeof THEME_PREFERENCES[number]
 
@@ -35,12 +47,15 @@ export interface ThemeSettings {
   preference: ThemePreference
   /** Conversation content font size in px (integer within {@link FONT_SIZE_MIN}..{@link FONT_SIZE_MAX}). */
   fontSize: number
+  /** Selected accent color; 'default' keeps the shipped brand colors. */
+  accent: AccentId
 }
 
 /** Durable theme schema; also the wire envelope the browser scope validates against. */
 export const ThemeSettingsSchema: z<ThemeSettings> = z.object({
   [THEME_PREFERENCE_FIELD]: z.union([...THEME_PREFERENCES]).default(DEFAULT_PREFERENCE),
   [FONT_SIZE_FIELD]: z.number().step(1).min(FONT_SIZE_MIN).max(FONT_SIZE_MAX).default(DEFAULT_FONT_SIZE),
+  [ACCENT_FIELD]: z.union([...ACCENT_IDS]).default(DEFAULT_ACCENT),
 })
 
 /**
@@ -50,4 +65,13 @@ export const ThemeSettingsSchema: z<ThemeSettings> = z.object({
  */
 export function isThemePreference(value: unknown): value is ThemePreference {
   return THEME_PREFERENCES.some(preference => preference === value)
+}
+
+/**
+ * Narrow one wire or registry value to a selectable accent.
+ * @param value - value crossing the settings or registry boundary.
+ * @returns whether the value is a selectable accent id.
+ */
+export function isAccentId(value: unknown): value is AccentId {
+  return ACCENT_IDS.some(accent => accent === value)
 }

@@ -29,3 +29,16 @@ export const en: Record<keyof typeof zh, string> = {
 
 /** Stable locale keys consumed by the shared modal. */
 export type SessionLogDownloadKey = keyof typeof zh
+
+/** Turkish dictionary. */
+export const tr: Record<keyof typeof zh, string>= {
+  'header.more': 'Diğer işlemler',
+  'menu.download': 'Oturum günlüğünü indir',
+  'dialog.preparingTitle': 'Oturum dışa aktarılıyor',
+  'dialog.preparingDescription': 'Bu Oturum, alt oturumları ve ekleri içeren bir ZIP hazırlanıyor.',
+  'dialog.successTitle': 'Oturum indirme başladı',
+  'dialog.successDescription': 'Tarayıcı Oturum ZIP dosyasını indiriyor.',
+  'dialog.errorTitle': 'Oturum dışa aktarma başarısız',
+  'dialog.close': 'Kapat',
+  'dialog.commandFailed': 'Oturum dışa aktarma başlatılamadı.',
+}

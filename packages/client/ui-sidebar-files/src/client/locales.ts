@@ -54,3 +54,20 @@ export const en = {
   'error.notDirectory': 'That is not a directory.',
   'error.unavailable': 'Read failed: {message}',
 } satisfies Record<SidebarFilesKey, string>
+
+/** Turkish dictionary, checked complete against the zh key set. */
+export const tr= {
+  'type.label': 'Dosyalar',
+  'guide.title': 'Çalışma alanı dosyaları',
+  'guide.description': 'Bu oturumun çalışma alanındaki dosyalara göz atın',
+  'loading': 'Okunuyor…',
+  'empty': 'Boş klasör',
+  'truncated': 'Çok fazla girdi var; yalnızca bir kısmı gösteriliyor.',
+  'noWorkspace': 'Bu oturumun çalışma alanı klasörü yok.',
+  'reload': 'Yeniden yükle',
+  'entry.other': 'Dosya veya klasör değil; bu yüzden açılamıyor.',
+  'error.notFound': 'Bu klasör artık yok. Taşınmış veya silinmiş olabilir.',
+  'error.outsideWorkspace': 'Bu klasör çalışma alanının dışında; kenar çubuğu okumuyor.',
+  'error.notDirectory': 'Bu bir klasör değil.',
+  'error.unavailable': 'Okuma başarısız: {message}',
+}

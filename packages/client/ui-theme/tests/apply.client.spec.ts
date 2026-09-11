@@ -11,8 +11,9 @@ import { apply, inject, SETTINGS_NS } from '@deepseek-ai/dsh-client-ui-theme/cli
 import type { AppearanceRowInjected, FontSizeRowInjected, ThemeRuntime } from '@deepseek-ai/dsh-client-ui-theme/client'
 import { THEME_SETTINGS_NAMESPACE, ThemeSettingsSchema } from '../src/theme-settings.ts'
 import { AppearanceRow } from '../src/client/AppearanceRow.tsx'
+import { AccentRow } from '../src/client/AccentRow.tsx'
 import { FontSizeRow } from '../src/client/FontSizeRow.tsx'
-import type { createAppearanceRowStore, createFontSizeRowStore } from '../src/client/settings-store.ts'
+import type { createAccentRowStore, createAppearanceRowStore, createFontSizeRowStore } from '../src/client/settings-store.ts'
 
 // These specs assert the shipped Chinese copy. The lane has no jsdom `window`,
 // so browser-language detection never runs and a fresh LocaleRuntime opens on
@@ -153,6 +154,37 @@ describe('ui-theme apply', () => {
     await vi.waitFor(() => { expect(b.mutate).toHaveBeenCalledTimes(2) })
   })
 
+  it('registers the accent row and applies/disposes its override layer', async () => {
+    const b = await bench()
+    declareItems(b.slots)
+    await b.ctx.plugin({ inject: [...inject], apply }).await()
+    const theme = b.ctx.get('theme') as ThemeRuntime
+    const entry = b.slots.entries(SLOT).find(e => e.component === AccentRow)!
+    expect(entry.options).toMatchObject({ id: 'accent', order: 12 })
+    expect(entry.locale).toBe(SETTINGS_NS)
+
+    // Shipped brand colors: built-in themes carry no alias tokens.
+    expect(theme.getTheme().active.tokens['--dsw-alias-brand-primary']).toBeUndefined()
+    theme.setAccent('blue')
+    expect(theme.getTheme().active.tokens['--dsw-alias-brand-primary']).toBe('var(--dsw-static-blue-600)')
+    expect(theme.getTheme().active.tokens['--dsw-alias-state-business-primary']).toBe('var(--dsw-static-blue-600)')
+    await vi.waitFor(() => { expect(b.mutate).toHaveBeenCalledTimes(1) })
+
+    // The dark scheme picks the dark pair; reset removes the whole layer.
+    theme.setTheme('dark')
+    expect(theme.getTheme().active.tokens['--dsw-alias-brand-primary']).toBe('var(--dsw-static-blue-450)')
+    theme.setAccent('default')
+    expect(theme.getTheme().active.tokens['--dsw-alias-brand-primary']).toBeUndefined()
+    await vi.waitFor(() => { expect(b.mutate).toHaveBeenCalledTimes(3) })
+
+    // The row's injected face routes the same write.
+    const instance = (entry.store as ReturnType<typeof createAccentRowStore>).create()
+    const face = (entry.inject as unknown as (a: typeof instance.actions) => import('@deepseek-ai/dsh-client-ui-theme/client').AccentRowInjected)(instance.actions)
+    face.setAccent('red')
+    expect(theme.getTheme().active.tokens['--dsw-alias-brand-primary']).toBe('var(--dsw-static-red-400)')
+    await vi.waitFor(() => { expect(b.mutate).toHaveBeenCalledTimes(4) })
+  })
+
   it('loads Host settings at boot, refreshes its namespace, and keeps remote browsers process-local', async () => {
     const b = await bench()
     // The shared mirror read once at bench time; a Host-side change reaches it
@@ -218,7 +250,7 @@ describe('ui-theme apply', () => {
     const b = await bench()
     const host = declareItems(b.slots)
     await b.ctx.plugin({ inject: [...inject], apply }).await()
-    expect(b.slots.entries(SLOT)).toHaveLength(2)
+    expect(b.slots.entries(SLOT)).toHaveLength(3)
 
     // Collapse: the declarer dies, the cascade removes our entries while the
     // apply closure still holds its (now stale) disposers.
@@ -236,7 +268,7 @@ describe('ui-theme apply', () => {
     declareItems(b.slots)
     const fiber = b.ctx.plugin({ inject: [...inject], apply })
     await fiber.await()
-    expect(b.slots.entries(SLOT)).toHaveLength(2)
+    expect(b.slots.entries(SLOT)).toHaveLength(3)
     await fiber.dispose()
     expect(b.slots.entries(SLOT)).toHaveLength(0)
     // Dictionary disposal: translation falls back to the bare key.

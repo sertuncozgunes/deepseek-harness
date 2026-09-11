@@ -27,3 +27,14 @@ export const en = {
   'row.inspect': 'Inspect',
   'menu.userOnly': 'user-only',
 } satisfies Record<SkillKey, string>
+
+/** Turkish dictionary, checked complete against the zh key set. */
+export const tr= {
+  'row.title': 'Beceri',
+  'row.running': 'Beceri yükleniyor',
+  'row.failed': 'Beceri yüklemesi başarısız',
+  'row.stopped': 'Beceri yüklemesi durduruldu',
+  'row.instructions': 'Talimatlar',
+  'row.inspect': 'İncele',
+  'menu.userOnly': 'yalnızca kullanıcı',
+}

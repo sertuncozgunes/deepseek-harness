@@ -94,6 +94,41 @@ function titles(container: HTMLElement): string[] {
 }
 
 describe('MenuView', () => {
+  it('renders the favorite affordance and routes its toggle without picking the row', () => {
+    const onToggle = vi.fn()
+    const { onPick } = mount(openState({
+      groups: [{
+        source: 'command',
+        status: 'ready',
+        items: [
+          { name: 'goal', description: 'Set up a goal', icon: 'file', favorite: { pinned: false, onToggle } },
+          { name: 'plan' },
+        ],
+      }],
+      highlight: { source: 'command', index: 0 },
+    }))
+    const pin = screen.getByRole('button', { name: '收藏命令 goal' })
+    expect(pin.getAttribute('aria-pressed')).toBe('false')
+    fireEvent.mouseDown(pin)
+    expect(onToggle).toHaveBeenCalledTimes(1)
+    expect(onPick).not.toHaveBeenCalled()
+  })
+
+  it('marks the pinned state and relabels the affordance', () => {
+    mount(openState({
+      groups: [{
+        source: 'command',
+        status: 'ready',
+        items: [
+          { name: 'goal', favorite: { pinned: true, onToggle: vi.fn() } },
+        ],
+      }],
+      highlight: { source: 'command', index: 0 },
+    }))
+    const pin = screen.getByRole('button', { name: '取消收藏命令 goal' })
+    expect(pin.getAttribute('aria-pressed')).toBe('true')
+  })
+
   it('renders null while closed and appears when the store opens', () => {
     const { menu, view } = mount(CLOSED)
     expect(view.container.childElementCount).toBe(0)

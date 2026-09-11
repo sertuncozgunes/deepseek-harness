@@ -25,3 +25,12 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
     sidebarImage: ImagePreviewKey
   }
 }
+
+/** Turkish dictionary, checked complete against the zh key set. */
+export const tr= {
+  'title': 'Görsel',
+  'preview': 'Görsel önizlemesi: {name}',
+  'loading': 'Görsel açılıyor…',
+  'failed': 'Bu görsel görüntülenemedi.',
+  'unsupported': 'Görsel önizlemesi dosyanın tam içeriğini gerektirir.',
+}

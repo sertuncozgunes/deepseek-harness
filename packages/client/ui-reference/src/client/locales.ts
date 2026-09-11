@@ -48,3 +48,17 @@ export const en = {
   'time.months': '{n}mo',
   'time.years': '{n}y',
 } satisfies Record<ReferenceKey, string>
+
+/** Turkish dictionary, checked complete against the zh key set. */
+export const tr= {
+  'section.files': 'Dosyalar ve klasörler',
+  'section.sessions': 'Oturumlar',
+  'candidate.noCwd': '(çalışma dizini yok)',
+  'crumb.root': 'Çalışma alanı',
+  'time.now': 'şimdi',
+  'time.minutes': '{n} dk',
+  'time.hours': '{n} sa',
+  'time.days': '{n} g',
+  'time.months': '{n} ay',
+  'time.years': '{n} y',
+}

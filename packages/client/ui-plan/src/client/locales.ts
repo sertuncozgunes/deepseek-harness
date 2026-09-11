@@ -22,3 +22,13 @@ export const en = {
   'chip.off.title': 'Plan mode off — click to turn on (/plan)',
   'chip.exitFailed': 'Failed to exit plan mode',
 } satisfies Record<PlanKey, string>
+
+/** Turkish dictionary, checked complete against the zh key set. */
+export const tr= {
+  'chip.label': 'Plan',
+  'chip.on.aria': 'Plan modu açık, kapatmak için basın',
+  'chip.on.title': 'Plan modu açık — kapatmak için tıklayın (/plan off)',
+  'chip.off.aria': 'Plan modu kapalı, açmak için basın',
+  'chip.off.title': 'Plan modu kapalı — açmak için tıklayın (/plan)',
+  'chip.exitFailed': 'Plan modundan çıkılamadı',
+}

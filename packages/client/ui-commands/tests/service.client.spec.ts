@@ -99,6 +99,25 @@ async function bench(opts: BenchOptions = {}) {
       return () => { registered.delete(key) }
     },
   })
+  // Durable favorites scope: in-memory section + subscriber fan-out.
+  const favoritesSection: { favorites?: string[] } = {}
+  const favoritesSubs: Array<() => void> = []
+  ctx.provide('settingsScope', {
+    bind: () => ({
+      getSnapshot: () => ({ value: favoritesSection }),
+      subscribe: (fn: () => void) => {
+        favoritesSubs.push(fn)
+        return () => {
+          const at = favoritesSubs.indexOf(fn)
+          if (at >= 0) favoritesSubs.splice(at, 1)
+        }
+      },
+      set: async (_field: string, value: unknown) => {
+        favoritesSection.favorites = value as string[]
+        for (const fn of [...favoritesSubs]) fn()
+      },
+    }),
+  } as never)
   // Deterministic key-echo translator: notice assertions read `key{json}`.
   ctx.provide('locale', {
     bind: (ns: string) => (key: string, params?: Record<string, unknown>) =>
@@ -145,7 +164,12 @@ async function bench(opts: BenchOptions = {}) {
   const warm = async (session: ClientSessionContext) => {
     await source.candidates(session, { query: '', position: 'leading', drilled: false, signal: new AbortController().signal })
   }
-  return { ctx, fiber, command, source, mint, warm, listCalls, executeCalls, executions, registered, notices, remote }
+  const favoritesSource = registered.get('/ favorites')
+  if (favoritesSource === undefined) throw new Error('favorites source not registered')
+  return {
+    ctx, fiber, command, source, favoritesSource, mint, warm, listCalls, executeCalls,
+    executions, registered, notices, remote, favoritesSection,
+  }
 }
 
 function menuPick(source: InputTriggerSource, name: string, session: ClientSessionContext, end?: number) {
@@ -159,6 +183,47 @@ function menuPick(source: InputTriggerSource, name: string, session: ClientSessi
   }
   return source.onPick(pick)
 }
+
+describe('command favorites', () => {
+  it('registers the favorites source ordered above the command group', async () => {
+    const b = await bench()
+    expect(b.favoritesSource.order).toBe(-1)
+    expect(b.favoritesSource.name).toBe('favorites')
+  })
+
+  it('pins through the durable scope and re-lists pinned commands in order', async () => {
+    const b = await bench()
+    const session = proj('s1')
+    const req = { query: '', position: 'leading' as const, drilled: false, signal: new AbortController().signal }
+
+    expect(await b.favoritesSource.candidates(session, req)).toEqual([])
+
+    const rows = await b.source.candidates(session, req)
+    expect(rows.every(r => r.favorite !== undefined)).toBe(true)
+    expect(rows.find(r => r.name === 'plan')!.favorite!.pinned).toBe(false)
+
+    rows.find(r => r.name === 'plan')!.favorite!.onToggle()
+    expect(b.favoritesSection.favorites).toEqual(['plan'])
+
+    const pinned = await b.favoritesSource.candidates(session, req)
+    expect(pinned.map(r => r.name)).toEqual(['plan'])
+    expect((await b.source.candidates(session, req)).find(r => r.name === 'plan')!.favorite!.pinned).toBe(true)
+
+    rows.find(r => r.name === 'plan')!.favorite!.onToggle()
+    expect(b.favoritesSection.favorites).toEqual([])
+    expect(await b.favoritesSource.candidates(session, req)).toEqual([])
+  })
+
+  it('dispatches a favorites pick through the command pipeline', async () => {
+    const b = await bench()
+    const session = proj('s1')
+    const req = { query: '', position: 'leading' as const, drilled: false, signal: new AbortController().signal }
+    const rows = await b.source.candidates(session, req)
+    rows.find(r => r.name === 'plan')!.favorite!.onToggle()
+    menuPick(b.favoritesSource, 'plan', session, 5)
+    expect(b.executeCalls.some(c => c.sessionId === sid('s1') && c.line === '/plan')).toBe(true)
+  })
+})
 
 const themeUi = (over: Partial<PopupSelectSpec> = {}): PopupSelectSpec => ({
   kind: 'popupSelect',
@@ -184,7 +249,7 @@ describe('registration', () => {
     expect(typeof source.matchSpace).toBe('function')
     expect(typeof source.matchEnter).toBe('function')
     expect(typeof source.warm).toBe('function')
-    expect([...registered.keys()]).toEqual(['/ command'])
+    expect([...registered.keys()]).toEqual(['/ favorites', '/ command'])
     await fiber.dispose()
     expect(registered.size).toBe(0)
   })
@@ -211,7 +276,7 @@ describe('candidates', () => {
     const { source, listCalls } = await bench()
     const list = await source.candidates(proj('s1'), req('g'))
     expect(listCalls).toEqual([{ sessionId: sid('s1') }])
-    expect(list).toEqual([{ name: 'goal', description: 'leadingInput kind', hint: 'goal text' }])
+    expect(list.map(({ favorite: _f, ...rest }) => rest)).toEqual([{ name: 'goal', description: 'leadingInput kind', hint: 'goal text' }])
   })
 
   it('ranks rows through the shared name ranker: prefixes first, then alignment, then source order', async () => {
@@ -333,7 +398,7 @@ describe('candidates', () => {
         ...Array<string>(4).fill('command:section.add'),
         ...Array<string>(5).fill('command:section.commands'),
       ])
-      expect(rows[1]).toEqual({
+      expect(rows[1]).toMatchObject({
         name: 'goal',
         label: 'command:label.goal',
         description: 'command:description.goal',
@@ -341,17 +406,19 @@ describe('candidates', () => {
         hint: '<objective>',
         section: 'command:section.add',
       })
-      expect(rows[0]).toEqual({ name: 'file', label: 'command:label.file', icon: Glyph, section: 'command:section.add' })
+      expect(rows[1]!.favorite).toEqual({ pinned: false, onToggle: expect.any(Function) })
+      expect(rows[0]).toMatchObject({ name: 'file', label: 'command:label.file', icon: Glyph, section: 'command:section.add' })
       expect(rows[6]).toMatchObject({ name: 'model', label: '模型', description: '选择本会话使用的模型', icon: Glyph })
       // A third-party command keeps its catalog text and gets no glyph.
-      expect(rows[8]).toEqual({ name: 'deploy', description: 'third-party command', section: 'command:section.commands' })
+      expect(rows[8]).toMatchObject({ name: 'deploy', description: 'third-party command', section: 'command:section.commands' })
     })
 
     it('a same-name override keeps its own presentation even when it copies the first-party description', async () => {
       const commands: CommandDescriptor[] = [{ name: 'goal', description: en['description.goal'], input: { hint: 'x' } }]
       const { source } = await bench({ commands: () => Promise.resolve({ commands }) })
       const [row] = await source.candidates(proj('s1'), req(''))
-      expect(row).toEqual({ name: 'goal', description: en['description.goal'], hint: 'x', section: 'command:section.add' })
+      expect(row).toMatchObject({ name: 'goal', description: en['description.goal'], hint: 'x', section: 'command:section.add' })
+      expect(row!.favorite).toEqual({ pinned: false, onToggle: expect.any(Function) })
       expect(source.matchSpace!(proj('s1'), '/目标')).toBeUndefined()
       expect(await source.matchEnter!(proj('s1'), '/目标 x', new AbortController().signal, { attachments: 0 })).toBeUndefined()
       expect(source.matchSpace!(proj('s1'), '/goal')).toHaveProperty('claim.name', 'goal')

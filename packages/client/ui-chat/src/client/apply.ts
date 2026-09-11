@@ -29,7 +29,8 @@ import { ChatView } from './chat/ChatView.tsx'
 import { registerChatNodeRenderers } from './chat/register-node-renderers.ts'
 import { StatsPills } from './chat/StatsPills.tsx'
 import { registerConversationNodes } from './conversation-nodes/register.ts'
-import { en, NS, zh } from './locale.ts'
+import { STATS_ID, StatsTabBody, StatsTabTitle, statsDefinition } from './chat/stats-tab.tsx'
+import { tr,  en, NS, zh } from './locale.ts'
 import { TranscriptViewRow, type TranscriptViewRowInjected } from './settings/TranscriptViewRow.tsx'
 import { createChatStore } from './stores.ts'
 import { TranscriptViewPolicy } from './transcript-view.ts'
@@ -47,7 +48,7 @@ const CHAT_NODE_INJECT: ChatNodeTurnDataInjected = {
 /** Services required by the Chat target and its presentation registrations. */
 export const inject = [
   'slots', 'sessions', 'uiSession', 'uiConversation', 'locale',
-  'settingsScope', 'remote', 'remote.session', 'sidebarRight',
+  'settingsScope', 'remote', 'remote.session', 'sidebarRight', 'sidebarRightTabs',
 ]
 
 /**
@@ -75,7 +76,21 @@ export function apply(ctx: Context): void {
     resolve: binding => ({ hooks: { chat: chatSource(binding) } }),
   })
 
-  ctx.effect(() => ctx.locale.register(NS, { zh, en }), 'ui-chat: dictionaries')
+  ctx.effect(() => ctx.locale.register(NS, { zh, en, tr }), 'ui-chat: dictionaries')
+
+  // Right-pane Stats tab: the session-scoped pane-tab slot delivers the
+  // standard projection seat, so the body reads the same whole-log figures
+  // the composer pills open in dialogs.
+  const statsT = ctx.locale.bind(NS)
+  ctx.effect(() => ctx.sidebarRightTabs.register(statsDefinition(statsT)), 'ui-chat: stats tab type')
+  ctx.effect(() => ctx.slots.inject('sidebar.right.pane.tab', () => ctx.slots.register(
+    { name: 'sidebar.right.pane.tab', key: STATS_ID, locale: NS },
+    StatsTabBody,
+  )), 'ui-chat: stats tab body')
+  ctx.effect(() => ctx.slots.inject('sidebar.right.pane.tab.title', () => ctx.slots.register(
+    { name: 'sidebar.right.pane.tab.title', key: STATS_ID },
+    StatsTabTitle,
+  )), 'ui-chat: stats tab title')
   const t = ctx.locale.bind(NS)
   const chatStore = createChatStore()
   const chatScrollPositions = new Map<SessionId, ChatScrollPosition>()

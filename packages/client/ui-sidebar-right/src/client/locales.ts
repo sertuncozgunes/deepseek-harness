@@ -58,3 +58,28 @@ export const en = {
   'tab.guide.title': 'Start',
   'tab.unavailable': 'Nothing here can view this kind of content yet.',
 } satisfies Record<SidebarRightKey, string>
+
+/** Turkish dictionary, checked complete against the zh key set. */
+export const tr= {
+  'chrome.expand': 'Kenar çubuğunu aç',
+  'chrome.expandAria': 'Sağ kenar çubuğunu aç',
+  'chrome.collapse': 'Kenar çubuğunu daralt',
+  'chrome.collapseAria': 'Sağ kenar çubuğunu daralt',
+  'chrome.toFullscreen': 'Tam ekran',
+  'chrome.exitFullscreen': 'Tam ekrandan çık',
+  'dock.emptyPane': 'Boş panel',
+  'dock.splitPane': 'Böl',
+  'dock.splitPaneDisabled': 'İki panel üst sınırdır',
+  'dock.splitPaneNarrow': 'Bölmek için yeterli genişlik yok; kenar çubuğunu genişletin',
+  'dock.closeTab': 'Kapat',
+  'dock.addTab': 'Yeni sekme',
+  'dock.dockFloat': 'Kenar çubuğuna geri gönder',
+  'dock.closeFloat': 'Kapat',
+  'dock.drop.center': 'Buraya taşı',
+  'dock.drop.left': 'Sola böl',
+  'dock.drop.right': 'Sağa böl',
+  'dock.drop.top': 'Üste böl',
+  'dock.drop.bottom': 'Alta böl',
+  'tab.guide.title': 'Başla',
+  'tab.unavailable': 'Bu içerik türü için henüz bir görüntüleme yolu yok.',
+}

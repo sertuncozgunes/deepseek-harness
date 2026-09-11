@@ -18,20 +18,22 @@ import type {} from '@deepseek-ai/dsh-client-locale/client'
 import type {} from '@deepseek-ai/dsh-client-ui-renderer/client'
 import type { AppearanceRowInjected } from './AppearanceRow.tsx'
 import { AppearanceRow } from './AppearanceRow.tsx'
+import { AccentRow, type AccentRowInjected } from './AccentRow.tsx'
 import type { FontSizeRowInjected } from './FontSizeRow.tsx'
 import { FontSizeRow } from './FontSizeRow.tsx'
-import { createAppearanceRowStore, createFontSizeRowStore } from './settings-store.ts'
+import { createAccentRowStore, createAppearanceRowStore, createFontSizeRowStore } from './settings-store.ts'
 import { installThemeStyles } from './styles.ts'
-import { en, zh, type ThemeKey } from './locales.ts'
+import { tr,  en, zh, type ThemeKey } from './locales.ts'
 import {
-  DEFAULT_FONT_SIZE, DEFAULT_PREFERENCE, FONT_SIZE_FIELD, FONT_SIZE_MAX, FONT_SIZE_MIN,
-  isThemePreference, THEME_PREFERENCE_FIELD, THEME_SETTINGS_NAMESPACE,
-  type ThemePreference, type ThemeSettings,
+  ACCENT_FIELD, DEFAULT_ACCENT, DEFAULT_FONT_SIZE, DEFAULT_PREFERENCE, FONT_SIZE_FIELD,
+  FONT_SIZE_MAX, FONT_SIZE_MIN, isAccentId, isThemePreference, THEME_PREFERENCE_FIELD,
+  THEME_SETTINGS_NAMESPACE, type AccentId, type ThemePreference, type ThemeSettings,
 } from '../theme-settings.ts'
 
 export type { AppearanceRowComponentProps, AppearanceRowInjected } from './AppearanceRow.tsx'
+export type { AccentRowComponentProps, AccentRowInjected } from './AccentRow.tsx'
 export type { FontSizeRowComponentProps, FontSizeRowInjected } from './FontSizeRow.tsx'
-export type { AppearanceRowState, FontSizeRowState } from './settings-store.ts'
+export type { AccentRowState, AppearanceRowState, FontSizeRowState } from './settings-store.ts'
 export type { ThemeKey } from './locales.ts'
 export type { ThemePreference, ThemeSettings } from '../theme-settings.ts'
 
@@ -74,6 +76,30 @@ export interface ThemeDefinition {
   colorScheme: 'light' | 'dark'
   /** Alias-layer overrides applied as inline CSS variables over the base palette. */
   tokens: ThemeTokens
+}
+
+/** Override-layer source id for the accent row's layer. */
+const ACCENT_LAYER_SOURCE = 'ui-theme-accent'
+
+/**
+ * Accent palettes: per-accent alias overrides. 'default' carries no layer —
+ * the shipped brand colors apply. Each pair keeps the primary-ink contrast
+ * (white in light mode, near-black in dark) at or above the AA threshold.
+ */
+const ACCENT_TOKENS: Readonly<Record<AccentId, ThemeTokenOverrides | undefined>> = {
+  default: undefined,
+  blue: {
+    '--dsw-alias-brand-primary': { light: 'var(--dsw-static-blue-600)', dark: 'var(--dsw-static-blue-450)' },
+    '--dsw-alias-state-business-primary': { light: 'var(--dsw-static-blue-600)', dark: 'var(--dsw-static-blue-450)' },
+  },
+  deepseek: {
+    '--dsw-alias-brand-primary': { light: 'var(--dsw-static-deepseek-600)', dark: 'var(--dsw-static-deepseek-450)' },
+    '--dsw-alias-state-business-primary': { light: 'var(--dsw-static-deepseek-600)', dark: 'var(--dsw-static-deepseek-450)' },
+  },
+  red: {
+    '--dsw-alias-brand-primary': { light: 'var(--dsw-static-red-600)', dark: 'var(--dsw-static-red-400)' },
+    '--dsw-alias-state-business-primary': { light: 'var(--dsw-static-red-600)', dark: 'var(--dsw-static-red-400)' },
+  },
 }
 
 /** Immutable theme state published on every change. */
@@ -161,6 +187,9 @@ export class ThemeRuntime {
   private themes: ThemeDefinition[] = [...BUILTIN_THEMES]
   private preference: ThemePreference
   private fontSize: number = bootstrapFontSize()
+  /** Persisted accent id (private writes; public reads for the apply-world store sync). */
+  accent: AccentId = DEFAULT_ACCENT
+  private accentDisposer: (() => void) | undefined
   private revision = 0
   private snapshot: ThemeSnapshot
   private readonly media: MediaQueryList | undefined
@@ -239,6 +268,29 @@ export class ThemeRuntime {
   }
 
   /**
+   * Switch the accent color — the only accent write entry. 'default' removes
+   * the override layer so the shipped brand colors apply. Accepted values are
+   * written through the settings scope and emit `theme/change`.
+   * @param id - a selectable accent id; unknown ids throw.
+   */
+  setAccent(id: string): void {
+    if (!isAccentId(id)) throw new Error(`accent "${id}" is not selectable`)
+    if (this.accent === id) return
+    this.accent = id
+    void this.host.set(ACCENT_FIELD, id)
+    this.applyAccent()
+    this.publish()
+  }
+
+  /** (Re)apply the accent layer: disposal replaces the whole layer. */
+  private applyAccent(): void {
+    this.accentDisposer?.()
+    this.accentDisposer = undefined
+    const tokens = ACCENT_TOKENS[this.accent]
+    if (tokens !== undefined) this.accentDisposer = this.overrideTokens(ACCENT_LAYER_SOURCE, tokens)
+  }
+
+  /**
    * Change the conversation content font size — the only font-size write
    * entry. Accepted values are written through the settings scope and emit
    * `theme/change`.
@@ -258,9 +310,12 @@ export class ThemeRuntime {
   private adopt(): void {
     const section = this.host.getSnapshot().value
     if (section === undefined) return
-    if (this.preference === section.preference && this.fontSize === section.fontSize) return
+    const accent = isAccentId(section.accent) ? section.accent : DEFAULT_ACCENT
+    if (this.preference === section.preference && this.fontSize === section.fontSize && this.accent === accent) return
     this.preference = section.preference
     this.fontSize = section.fontSize
+    this.accent = accent
+    this.applyAccent()
     this.publish()
   }
 
@@ -431,15 +486,18 @@ export function apply(ctx: ClientContext): void {
   const theme = new ThemeRuntime(ctx, host)
   ctx.provide('theme', theme)
 
-  ctx.effect(() => ctx.locale.register(SETTINGS_NS, { zh, en }), 'ui-theme: settings row dictionaries')
+  ctx.effect(() => ctx.locale.register(SETTINGS_NS, { zh, en, tr }), 'ui-theme: settings row dictionaries')
 
   const store = createAppearanceRowStore()
   let bound: BoundActions<typeof store> | undefined
   const fontSizeStore = createFontSizeRowStore()
   let fontSizeBound: BoundActions<typeof fontSizeStore> | undefined
+  const accentStore = createAccentRowStore()
+  let accentBound: BoundActions<typeof accentStore> | undefined
   const sync = (snapshot: ThemeSnapshot): void => {
     bound?.sync(snapshot.preference, snapshot.revision)
     fontSizeBound?.sync(snapshot.fontSize, snapshot.revision)
+    accentBound?.sync(theme.accent, snapshot.revision)
   }
   ctx.on('theme/change', sync)
   const injected = (actions: BoundActions<typeof store>): AppearanceRowInjected => {
@@ -475,4 +533,20 @@ export function apply(ctx: ClientContext): void {
     locale: SETTINGS_NS,
     inject: fontSizeInjected,
   }, FontSizeRow))
+
+  const accentInjected = (actions: BoundActions<typeof accentStore>): AccentRowInjected => {
+    accentBound = actions
+    sync(theme.getTheme())
+    return {
+      setAccent: (id) => { theme.setAccent(id) },
+    }
+  }
+  ctx.slots.inject('settings.general.item', () => ctx.slots.register({
+    name: 'settings.general.item',
+    id: 'accent',
+    order: 12,
+    store: accentStore,
+    locale: SETTINGS_NS,
+    inject: accentInjected,
+  }, AccentRow))
 }

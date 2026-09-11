@@ -159,11 +159,15 @@ describe('BrowserAuth', () => {
       expect(denied.state.status).toBe(401)
       expect(denied.state.headers).toEqual({
         'cache-control': 'no-store',
-        'content-type': 'text/plain; charset=utf-8',
+        'content-type': 'text/html; charset=utf-8',
       })
-      expect(denied.state.body).toBe(candidate.method === 'HEAD'
-        ? undefined
-        : 'dsh web authentication required; reopen the URL printed by dsh web.\n')
+      if (candidate.method === 'HEAD') {
+        expect(denied.state.body).toBeUndefined()
+      } else {
+        expect(String(denied.state.body)).toContain('dsh web authentication required')
+        expect(String(denied.state.body)).toContain('kimlik doğrulaması gerekli')
+        expect(String(denied.state.body)).toContain('DeepSeek Harness')
+      }
     }
   })
 

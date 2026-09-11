@@ -183,6 +183,26 @@
   color: var(--dsw-alias-label-primary);
 }
 
+/* Favorite affordance: a quiet pin, brand-tinted while pinned. */
+.pin {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  color: var(--dsw-alias-label-caption);
+}
+
+.pin:hover {
+  background: var(--dsw-alias-interactive-bg-hover);
+  color: var(--dsw-alias-label-primary);
+}
+
+.pinActive {
+  color: var(--dsw-alias-state-business-primary);
+}
+
 /* Heading row above a source group: non-interactive small grey text,
  * padding aligned with items (mirrors ui-primitives Menu .label). */
 .groupTitle {

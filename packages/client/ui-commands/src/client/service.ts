@@ -20,12 +20,17 @@ import type { Context as ClientContext } from '@deepseek-ai/cordis'
 import type { ISessions } from '@deepseek-ai/dsh-api-session-controller/client'
 import type { SessionId } from '@deepseek-ai/dsh-session/types'
 import type { TranslateNS } from '@deepseek-ai/dsh-client-locale/client'
+// Type-only: pulls the typed settings scope (ctx.settingsScope).
+import type { SettingsScope } from '@deepseek-ai/dsh-client-ui-settings/client'
 import { rankByName } from '@deepseek-ai/dsh-client-ui-primitives'
 import type {
   CandidateRequest, ClientSessionContext, CommandClaim, PickOutcome, InputTriggerCandidate, InputTriggerPick,
   SubmitAttachment, SubmitEnvelope, SubmitOutcome,
 } from '@deepseek-ai/dsh-client-ui-input-trigger/client'
 import type { CommandContribution, CommandDecoration, CommandUiContract } from './contract.ts'
+import {
+  COMMAND_FAVORITES_FIELD, COMMAND_FAVORITES_NS, type CommandFavoritesSettings,
+} from '../command-favorites-settings.ts'
 import type { CommandDescriptor } from './directory.ts'
 import { CommandDirectory } from './directory.ts'
 import { PopupSelectController } from './popup.ts'
@@ -64,12 +69,16 @@ interface LiveState {
 
 /** Command surface: session-keyed directory + '/' source + contribution registry + per-session popups. */
 export class CommandUiRuntime extends Service implements CommandUiContract {
-  static inject = ['inputTriggers', 'sessions', 'remote', 'remote.commands']
+  static inject = ['inputTriggers', 'sessions', 'remote', 'remote.commands', 'settingsScope']
 
   private readonly directory: CommandDirectory
   private readonly live: LiveState = { contributions: new Map(), decorations: new Map(), popups: new Map() }
   /** `command`-namespace translator (composer refusal notices). */
   private readonly t: TranslateNS<'command'>
+  /** Durable pinned-command scope (assigned in the constructor). */
+  private settings!: SettingsScope<CommandFavoritesSettings>
+  /** Pinned command names in document order. */
+  private favorites: Set<string> = new Set()
 
   /**
    * @param ctx - owning root context (plugin fiber; the service registers
@@ -88,6 +97,32 @@ export class CommandUiRuntime extends Service implements CommandUiContract {
     })
     const inputTriggers = ctx.get('inputTriggers')
     if (inputTriggers === undefined) throw new Error('ui-commands: slash service unavailable')
+
+    // Pinned commands: the durable section drives the menu's Favorites group
+    // and each command row's pin toggle. Reads prefer the bound scope; writes
+    // go through it so the Host document stays the single source of truth.
+    this.settings = ctx.settingsScope.bind<CommandFavoritesSettings>({ namespace: COMMAND_FAVORITES_NS })
+    this.favorites = new Set(this.settings.getSnapshot().value?.favorites ?? [])
+    ctx.effect(() => this.settings.subscribe(() => {
+      this.favorites = new Set(this.settings.getSnapshot().value?.favorites ?? [])
+    }), 'ui-commands: favorites scope adoption')
+
+    // Favorites group renders first (order -1); its candidates are the pinned
+    // commands, reusing the same synthesis + dispatch as the command group.
+    ctx.effect(() => inputTriggers.registerSource({
+      trigger: '/',
+      name: 'favorites',
+      order: -1,
+      showGroupTitle: true,
+      candidates: async (session, req) => {
+        const all = await this.candidates(session, req)
+        const pinned = this.favorites
+        return all.filter(c => pinned.has(c.name))
+      },
+      onPick: pick => this.dispatch(pick),
+      warm: (session) => { this.directory.warm(session.sessionId) },
+    }), 'command: favorites source')
+
     ctx.effect(() => inputTriggers.registerSource({
       trigger: '/',
       name: 'command',
@@ -189,6 +224,22 @@ export class CommandUiRuntime extends Service implements CommandUiContract {
     }
   }
 
+  /** The menu's per-row favorite affordance for one command name. */
+  private favoriteFace(name: string): NonNullable<InputTriggerCandidate['favorite']> {
+    return {
+      pinned: this.favorites.has(name),
+      onToggle: () => { this.toggleFavorite(name) },
+    }
+  }
+
+  /** Pin or unpin one command; the write rides the durable settings scope. */
+  private toggleFavorite(name: string): void {
+    const next = this.favorites.has(name)
+      ? [...this.favorites].filter(n => n !== name)
+      : [...this.favorites, name]
+    void this.settings.set(COMMAND_FAVORITES_FIELD, next)
+  }
+
   /**
    * Menu candidates: host catalog + contribution availability, built-in rows
    * localized, then position filtering; sections for an empty query, the
@@ -204,6 +255,7 @@ export class CommandUiRuntime extends Service implements CommandUiContract {
         name: c.name,
         ...(builtinRowFace(c, this.t) ?? { description: c.description }),
         ...(c.input !== undefined ? { hint: c.input.hint } : {}),
+        favorite: this.favoriteFace(c.name),
       })
     }
     for (const contribution of this.live.contributions.values()) {
@@ -216,6 +268,7 @@ export class CommandUiRuntime extends Service implements CommandUiContract {
         ...(contribution.label === undefined ? {} : { label: contribution.label() }),
         ...(contribution.description === undefined ? {} : { description: contribution.description() }),
         ...(contribution.icon === undefined ? {} : { icon: contribution.icon }),
+        favorite: this.favoriteFace(contribution.name),
       })
     }
     const visible = rows.filter(c => req.position === 'leading' || c.hint === undefined)

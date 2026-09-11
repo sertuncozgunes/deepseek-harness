@@ -23,3 +23,11 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
     documentMarkdown: MarkdownPreviewKey
   }
 }
+
+/** Turkish dictionary, checked complete against the zh key set. */
+export const tr= {
+  'viewer.label': 'Markdown',
+  'code.copy': 'Kopyala',
+  'code.copied': 'Kopyalandı',
+  'footnotes': 'Dipnotlar',
+}

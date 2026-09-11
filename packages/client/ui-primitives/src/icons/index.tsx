@@ -961,6 +961,18 @@ export const IconPlanOutline14 = ({ size = 14, className }: IconProps) => (
   </svg>
 )
 
+/** ic_ds_pin_outline_14 */
+export const IconPinOutline14 = ({ size = 14, className }: IconProps) => (
+  <svg width={size} height={size} className={className} viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M7 1C4.52 1 2.5 3.06 2.5 5.6C2.5 8.8 6.4 12.2 7 12.9C7.6 12.2 11.5 8.8 11.5 5.6C11.5 3.06 9.48 1 7 1ZM7 3.6C8.1 3.6 9 4.5 9 5.6C9 6.7 8.1 7.6 7 7.6C5.9 7.6 5 6.7 5 5.6C5 4.5 5.9 3.6 7 3.6Z"
+      fill="currentColor"
+    />
+  </svg>
+)
+
 /**
  * Compact row glyph of the composer menu: the composer's context-usage ring
  * (ContextMeter) frozen at its resting look — a quiet track with one filled
@@ -988,5 +1000,17 @@ export const SHIELD_OUTLINE_STROKE = '1.31831'
 export const IconShieldOutline16 = ({ size = 16, className }: IconProps) => (
   <svg width={size} height={size} className={className} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d={SHIELD_OUTLINE_PATH} stroke="currentColor" strokeWidth={SHIELD_OUTLINE_STROKE} strokeLinejoin="round" />
+  </svg>
+)
+
+/** ic_ds_pin_fill_14 */
+export const IconPinFill14 = ({ size = 14, className }: IconProps) => (
+  <svg width={size} height={size} className={className} viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M7 1C4.52 1 2.5 3.06 2.5 5.6C2.5 8.8 6.4 12.2 7 12.9C7.6 12.2 11.5 8.8 11.5 5.6C11.5 3.06 9.48 1 7 1ZM7 8.4C8.55 8.4 9.8 7.15 9.8 5.6C9.8 4.05 8.55 2.8 7 2.8C5.45 2.8 4.2 4.05 4.2 5.6C4.2 7.15 5.45 8.4 7 8.4Z"
+      fill="currentColor"
+    />
   </svg>
 )

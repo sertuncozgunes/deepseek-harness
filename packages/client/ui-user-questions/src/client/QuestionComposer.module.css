@@ -35,6 +35,13 @@
   --dsh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
 }
 
+/* Keyboard focus: the elevation hairline rebinds to the brand stroke — the
+   same per-state path as the composer card — so the free-form answer field
+   shows a visible focus state (its own outline stays suppressed). */
+.card:focus-within {
+  --dsw-elevation-stroke-color: var(--dsw-alias-brand-primary);
+}
+
 .card,
 .card * {
   box-sizing: border-box;

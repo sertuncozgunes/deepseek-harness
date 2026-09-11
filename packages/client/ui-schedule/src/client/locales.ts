@@ -49,3 +49,25 @@ export const en: Record<ScheduleCatalogKey, string> = {
 
 /** Key domain of the Schedule catalog namespace. */
 export type ScheduleCatalogKey = keyof typeof zh
+
+/** Turkish dictionary, checked complete against the zh key set. */
+export const tr: Record<ScheduleCatalogKey, string>= {
+  'trigger.one': '{count} hatırlatma',
+  'trigger.other': '{count} hatırlatma',
+  'list.aria': 'Etkin hatırlatmalar',
+  'status.scheduled': 'Planlandı',
+  'status.overdue': 'Gecikti',
+  'frequency.once': 'Bir kez',
+  'frequency.every': 'Her {value} {unit} aralığında',
+  'unit.day.one': 'gün',
+  'unit.day.other': 'gün',
+  'unit.hour.one': 'saat',
+  'unit.hour.other': 'saat',
+  'unit.minute.one': 'dakika',
+  'unit.minute.other': 'dakika',
+  'unit.second.one': 'saniye',
+  'unit.second.other': 'saniye',
+  'relative.now': 'Şimdi zamanı',
+  'relative.future': '{value} {unit} sonra',
+  'relative.overdue': '{value} {unit} gecikti',
+}

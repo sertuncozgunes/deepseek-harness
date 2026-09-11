@@ -60,3 +60,28 @@ export const en = {
   'blocked.composer': 'This model is unavailable — select one to continue',
   'empty.efforts': 'This model provides no reasoning effort levels.',
 } satisfies Record<ModelKey, string>
+
+/** Turkish dictionary, checked complete against the zh key set. */
+export const tr= {
+  'command.description': 'Bu konuşmanın modelini seç',
+  'command.label': 'Model',
+  'option.loadError': 'Katalog yüklenemedi: {message}',
+  'option.deepseekV4Flash.description': 'Hızlı, verimli ve ekonomik; odaklı, rutin veya paralel görevlere uygun.',
+  'option.deepseekV4Pro.description': 'Daha güçlü ajan kodlaması, bilgi ve zorlu akıl yürütme; karmaşık veya kalite açısından kritik görevlere daha yüksek maliyetle uygun.',
+  'trigger.fallback': 'Model seç',
+  'trigger.loading': 'Modeller yükleniyor…',
+  'trigger.selectAria': 'Model seç',
+  'trigger.aria': 'Model seç, geçerli: {model}',
+  'trigger.ariaEffort': 'Model seç, geçerli: {model}, düşünme düzeyi: {effort}',
+  'menu.aria': 'Model ve düşünme düzeyi',
+  'menu.model': 'Model',
+  'menu.effort': 'Düşünme düzeyi',
+  'effort.providerDefault': 'Varsayılan',
+  'status.loading': 'Model listesi yenileniyor…',
+  'error.action': 'Model işlemi başarısız: {message}',
+  'action.reload': 'Yeniden yükle',
+  'warning.groupLoad': '{name} yüklenemedi: {message}',
+  'empty.models': 'Kullanılabilir model yok.',
+  'blocked.composer': 'Bu model kullanılamıyor — devam etmek için bir model seçin',
+  'empty.efforts': 'Bu model düşünme düzeyi sunmuyor.',
+}

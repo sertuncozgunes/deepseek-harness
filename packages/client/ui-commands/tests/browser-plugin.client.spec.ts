@@ -28,6 +28,13 @@ async function bench() {
       return () => { sources.delete(`${src.trigger} ${src.name}`) }
     },
   })
+  ctx.provide('settingsScope', {
+    bind: () => ({
+      getSnapshot: () => ({ value: {} }),
+      subscribe: () => () => {},
+      set: async () => {},
+    }),
+  } as never)
   const scopes = new Map<SessionId, Context>()
   ctx.provide('sessions', {
     scope: (id: SessionId) => scopes.get(id),
@@ -58,7 +65,7 @@ async function bench() {
 
 describe('apply', () => {
   it('declares the services it binds', () => {
-    expect(inject).toEqual(['inputTriggers', 'sessions', 'remote', 'remote.commands', 'locale'])
+    expect(inject).toEqual(['inputTriggers', 'sessions', 'remote', 'remote.commands', 'settingsScope', 'locale'])
   })
 
   it('mounts ctx.commandUi, registers the source and the overlay entry, and folds up on disposal', async () => {
@@ -69,7 +76,7 @@ describe('apply', () => {
     const contract: CommandUiContract = command as CommandUiRuntime
     expect(typeof contract.register).toBe('function')
     expect(typeof contract.popupFor).toBe('function')
-    expect([...sources.keys()]).toEqual(['/ command'])
+    expect([...sources.keys()]).toEqual(['/ favorites', '/ command'])
     expect(slots.entries('conversation.input.overlay').map(entry => entry.options.id)).toEqual(['command-popup'])
     await fiber.dispose()
     expect(sources.size).toBe(0)

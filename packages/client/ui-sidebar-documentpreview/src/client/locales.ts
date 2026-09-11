@@ -52,3 +52,25 @@ export const en = {
   'error.unavailable': 'Read failed: {message}',
   retry: 'Retry',
 } satisfies Record<SidebarDocumentPreviewKey, string>
+
+/** Turkish dictionary, checked complete against the zh key set. */
+export const tr= {
+  'loading': 'Okunuyor…',
+  'loadMore': 'Daha fazla yükle',
+  'changed': 'Dosya değişti; önceki içerik gösteriliyor.',
+  'reloadNow': 'Yeniden yükle',
+  'reload': 'Dosyayı yeniden oku',
+  'wrap.enable': 'Satır kaydırmayı etkinleştir',
+  'wrap.disable': 'Satır kaydırmayı kapat',
+  'wrap.aria': 'Satır kaydırma',
+  'openWith': 'Birlikte aç',
+  'viewer.text': 'Düz metin',
+  'resourceUnavailable': 'Dosya kaynak hizmeti kullanılamıyor.',
+  'rendererUnavailable': '{name} önizlemesi kullanılamıyor.',
+  'error.notFound': 'Dosya bulunamadı. Taşınmış veya silinmiş olabilir.',
+  'error.tooLarge': 'Bu sayfa {limit} sınırını aşıyor ve okunamıyor.',
+  'error.notText': 'Metin dosyası değil; önizleme şu anda kullanılamıyor.',
+  'error.notRegularFile': 'Normal bir dosya değil; gösterilecek içerik yok.',
+  'error.unavailable': 'Okuma başarısız: {message}',
+  'retry': 'Yeniden dene',
+}

@@ -13,3 +13,19 @@
   --ds-transition-duration-fast: 0.1s;
   --ds-transition-duration-slow: 0.3s;
 }
+
+/* Reduced-motion contract: when the user asks for reduced motion, every
+ * component transition and animation collapses to a near-zero duration.
+ * The override is global on purpose — component sheets keep declaring their
+ * motion, and this single rule in the theme owner keeps the accessibility
+ * contract in one place (per-component guards would drift). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

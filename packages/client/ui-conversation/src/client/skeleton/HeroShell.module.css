@@ -219,6 +219,13 @@
   color: var(--dsw-alias-label-dimmed);
 }
 
+/* Keyboard focus stays visible (the resting border alone is not an
+ * indicator): the canonical focus ring from ui-primitives. */
+.modalInput:focus-visible {
+  outline: 2px solid var(--dsw-alias-state-business-primary);
+  outline-offset: 2px;
+}
+
 .modalAction {
   min-width: 72px;
 }

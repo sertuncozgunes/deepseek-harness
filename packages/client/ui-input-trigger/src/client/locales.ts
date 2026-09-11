@@ -15,6 +15,9 @@ export const zh = {
   'drill.key': 'Tab',
   'crumbs.aria': '目录导航',
   'suggestions.aria': '触发候选建议',
+  'favorites': '收藏',
+  'favorites.pin': '收藏命令 {name}',
+  'favorites.unpin': '取消收藏命令 {name}',
 } satisfies Record<string, string>
 
 /** The slash.menu namespace key union. */
@@ -31,4 +34,23 @@ export const en = {
   'drill.key': 'Tab',
   'crumbs.aria': 'Folder navigation',
   'suggestions.aria': 'Trigger suggestions',
+  'favorites': 'Favorites',
+  'favorites.pin': 'Pin command {name}',
+  'favorites.unpin': 'Unpin command {name}',
 } satisfies Record<MenuKey, string>
+
+/** Turkish dictionary, checked complete against the zh key set. */
+export const tr= {
+  'command': 'Komutlar',
+  'skill': 'Beceriler',
+  'subagent': 'Alt ajanlar',
+  'loading': 'Yükleniyor…',
+  'drill.aria': 'Klasöre göz at',
+  'drill.hint': 'Klasöre göz at',
+  'drill.key': 'Tab',
+  'crumbs.aria': 'Klasör gezinmesi',
+  'suggestions.aria': 'Önerileri tetikle',
+  'favorites': 'Favoriler',
+  'favorites.pin': 'Komutu sabitle: {name}',
+  'favorites.unpin': 'Sabitlemeyi kaldır: {name}',
+}

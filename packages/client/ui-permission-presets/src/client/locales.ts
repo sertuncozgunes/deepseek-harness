@@ -61,3 +61,31 @@ export const accessEn = {
   'confirm.cancel': 'Cancel',
   'confirm.enable': 'Enable Full access',
 } satisfies Record<PermissionAccessKey, string>
+
+/** Turkish dictionary, checked complete against the zh key set. */
+export const tr= {
+  'title': 'İzin',
+  'description': 'Yeni oturumların varsayılan izin modunu seçin',
+  'loading': 'Yükleniyor',
+  'unavailable': 'Kullanılamıyor',
+  'preset.readOnly': 'Salt okunur',
+  'preset.workspaceWrite': 'Çalışma alanı yazımı',
+  'preset.fullAccess': 'Tam erişim',
+  'confirm.title': 'Tam erişim etkinleştirilsin mi?',
+  'confirm.description': 'Tam erişim, yeni oturumların onay adımlarını azaltır ve hassas işlemler, dosya değişiklikleri ya da harici komutlar dahil daha fazla eylemi doğrudan gerçekleştirmesine olanak tanır. Yalnızca sonraki görevlere güvendiğinizde kullanın.',
+  'confirm.acknowledge': 'Riskleri anlıyorum ve devam etmek istiyorum',
+  'confirm.cancel': 'Vazgeç',
+  'confirm.enable': 'Tam erişimi etkinleştir',
+}
+
+/** Turkish dictionary, checked complete against the zh key set. */
+export const accessTr= {
+  'preset.readOnly': 'Salt okunur',
+  'preset.workspaceWrite': 'Çalışma alanı yazımı',
+  'preset.fullAccess': 'Tam erişim',
+  'confirm.title': 'Tam erişim etkinleştirilsin mi?',
+  'confirm.description': 'Tam erişim, onay adımlarını azaltır ve ajanın hassas işlemler, dosya değişiklikleri ya da harici komutlar dahil daha fazla eylemi doğrudan gerçekleştirmesine olanak tanır. Yalnızca geçerli göreve güvendiğinizde kullanın.',
+  'confirm.acknowledge': 'Riskleri anlıyorum ve devam etmek istiyorum',
+  'confirm.cancel': 'Vazgeç',
+  'confirm.enable': 'Tam erişimi etkinleştir',
+}

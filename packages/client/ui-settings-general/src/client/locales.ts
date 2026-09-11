@@ -34,3 +34,19 @@ export const en = {
   'connection.reconnect': 'Disconnected, reconnect now',
   'connection.restart': 'Reconnecting automatically, reconnect now',
 } satisfies Record<SettingsKey, string>
+
+/** Turkish dictionary, checked complete against the zh key set. */
+export const tr= {
+  'trigger': 'Ayarlar',
+  'title': 'Ayarlar',
+  'close': 'Kapat',
+  'openDocument': 'Yapılandırma dosyasını aç',
+  'openDocument.error': 'Yapılandırma dosyası açılamadı',
+  'general.nav': 'Genel',
+  'connection.error': 'Bağlantı koptu',
+  'connection.retry': 'Şimdi yeniden bağlan',
+  'connection.connecting': 'Yeniden bağlanılıyor',
+  'connection.connected': 'Bağlandı',
+  'connection.reconnect': 'Bağlantı koptu; şimdi yeniden bağlan',
+  'connection.restart': 'Otomatik yeniden deneniyor; şimdi yeniden bağlan',
+}

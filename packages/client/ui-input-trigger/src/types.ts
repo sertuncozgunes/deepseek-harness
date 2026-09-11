@@ -65,6 +65,12 @@ export interface InputTriggerCandidate {
   /** Opaque source-owned pick payload. */
   readonly value?: string
   /**
+   * Optional per-row favorite affordance: the menu renders a pin toggle when
+   * present. `onToggle` runs in place (row pick is not triggered), so a
+   * source owns its persistence and re-fetches candidates to reflect it.
+   */
+  readonly favorite?: { readonly pinned: boolean; onToggle(): void }
+  /**
    * The row offers a drill action beside the settling pick: Tab or the row's
    * chevron refines the query in place (directory descent) instead of
    * resolving the candidate.

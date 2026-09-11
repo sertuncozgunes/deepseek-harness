@@ -20,3 +20,12 @@ export const en = {
   reject: 'Reject',
   allowOnce: 'Allow once',
 } satisfies Record<ApprovalKey, string>
+
+/** Turkish dictionary, checked complete against the zh key set. */
+export const tr= {
+  'waiting': 'Onay bekleniyor',
+  'detail.aria': 'Onay ayrıntıları',
+  'escalation': '{toolName} aracı ayrıcalıklı yürütme istiyor',
+  'reject': 'Reddet',
+  'allowOnce': 'Bir kez izin ver',
+}

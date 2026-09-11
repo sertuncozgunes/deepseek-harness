@@ -57,3 +57,27 @@ export const en = {
   'error.generic': 'Could not save feedback',
   'error.noteTooLarge': 'The description is too long; shorten it and submit again',
 } satisfies Record<MessageFeedbackKey, string>
+
+/** Turkish dictionary, checked complete against the zh key set. */
+export const tr= {
+  'action.like': 'İyi yanıt',
+  'action.likeActive': 'Puanı kaldır',
+  'action.dislike': 'Sorunlu yanıt',
+  'action.dislikeActive': 'Puanı kaldır',
+  'dialog.title': 'Geri bildirim gönder',
+  'dialog.categories': 'Geri bildirim kategorisi',
+  'dialog.detail': 'Geri bildirim ayrıntıları',
+  'dialog.hint': 'İyileştirmemize yardımcı olacak ayrıntılar ekleyin. Gönderiminiz geçerli konuşma günlüğünü içerecek.',
+  'category.task-result': 'Görev sonucu',
+  'category.instruction-following': 'Talimatları anlama ve uygulama',
+  'category.product-interaction': 'Ürün özellikleri ve etkileşim',
+  'category.service-stability': 'Hizmet kararlılığı',
+  'category.resource-cost': 'Kaynak kullanımı ve maliyet',
+  'category.security-privacy-permission': 'Güvenlik, gizlilik ve izinler',
+  'category.other': 'Diğer',
+  'toast.recorded': 'Geri bildiriminiz için teşekkürler',
+  'error.conflict': 'Bu geri bildirim başka yerde değiştirildi; en güncel durum gösteriliyor',
+  'error.load': 'Geri bildirim yüklenemedi',
+  'error.generic': 'Geri bildirim kaydedilemedi',
+  'error.noteTooLarge': 'Açıklama çok uzun; kısaltıp yeniden gönderin',
+}

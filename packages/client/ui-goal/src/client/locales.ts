@@ -34,3 +34,19 @@ export const en = {
   'action.edit': 'Edit goal',
   'action.clear': 'Clear goal',
 } satisfies Record<GoalKey, string>
+
+/** Turkish dictionary, checked complete against the zh key set. */
+export const tr= {
+  'phase.active': 'Devam Eden Hedef',
+  'phase.active.disarmed': 'Etkin Olmayan Hedef',
+  'phase.paused': 'Duraklatılmış Hedef',
+  'phase.blocked': 'Engellenmiş Hedef',
+  'objective.aria': 'Hedef içeriği',
+  'commandInput.aria': 'Komut girişi',
+  'action.save': 'Hedefi kaydet',
+  'action.cancel': 'Düzenlemeden vazgeç',
+  'action.pause': 'Hedefi duraklat',
+  'action.resume': 'Hedefi sürdür',
+  'action.edit': 'Hedefi düzenle',
+  'action.clear': 'Hedefi temizle',
+}

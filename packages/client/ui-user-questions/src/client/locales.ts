@@ -40,3 +40,22 @@ export const en = {
   'plan.decline': 'Refuse',
   'plan.discuss': 'Chat about it',
 } satisfies Record<QuestionKey, string>
+
+/** Turkish dictionary, checked complete against the zh key set. */
+export const tr= {
+  'error.incomplete': 'Önce bu soruyu tamamlayın.',
+  'error.unanswered': 'Bir seçenek belirleyin veya kendi yanıtınızı yazın.',
+  'nav.prev': 'Önceki soru',
+  'nav.next': 'Sonraki soru',
+  'nav.minimize': 'Soru kartını daralt',
+  'nav.maximize': 'Soru kartını genişlet',
+  'nav.cancel': 'Tüm soruları kapat',
+  'option.recommended': 'Önerilen',
+  'custom.placeholder': 'Yanıtınızı yazın',
+  'action.skip': 'Bu soruyu atla',
+  'action.next': 'Sonraki',
+  'plan.header': 'Plan incelemesi',
+  'plan.approve': 'Onayla',
+  'plan.decline': 'Reddet',
+  'plan.discuss': 'Sohbette konuş',
+}

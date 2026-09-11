@@ -14,7 +14,7 @@
  */
 import { Fragment, useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from 'react'
 import clsx from 'clsx'
-import { IconChevronRightOutline14, ReferenceIcon, useAnchoredMaxHeight } from '@deepseek-ai/dsh-client-ui-primitives'
+import { IconChevronRightOutline14, IconPinFill14, IconPinOutline14, ReferenceIcon, useAnchoredMaxHeight } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { PropsLocale } from '@deepseek-ai/dsh-client-ui-slots'
 import css from './MenuView.module.css'
 import type { MenuViewInjected } from './slots.ts'
@@ -180,6 +180,27 @@ export function MenuView({ menu, headers, onPick, onCrumb, onHover, onDismiss, t
                           <span className={css.itemAlias}>{item.name}</span>
                         )}
                         {item.description !== undefined && <span className={css.itemDescription}>{item.description}</span>}
+                        {item.favorite !== undefined && (
+                          <span className={css.trailing}>
+                            <span
+                              role="button"
+                              aria-label={item.favorite.pinned
+                                ? t('favorites.unpin', { name: item.name })
+                                : t('favorites.pin', { name: item.name })}
+                              aria-pressed={item.favorite.pinned}
+                              className={clsx(css.pin, item.favorite.pinned && css.pinActive)}
+                              // mousedown so the composer keeps focus, same as the row;
+                              // stopPropagation keeps the row's settling pick out of it.
+                              onMouseDown={(ev) => {
+                                ev.preventDefault()
+                                ev.stopPropagation()
+                                item.favorite?.onToggle()
+                              }}
+                            >
+                              {item.favorite.pinned ? <IconPinFill14 /> : <IconPinOutline14 />}
+                            </span>
+                          </span>
+                        )}
                         {item.drill === true && (
                           <span className={css.trailing}>
                             {/* Visual hint only: Tab drills the highlighted row (the

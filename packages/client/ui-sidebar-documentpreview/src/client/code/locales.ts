@@ -21,3 +21,10 @@ export const en = {
   copy: 'Copy',
   copied: 'Copied',
 } satisfies Record<keyof typeof zh, string>
+
+/** Turkish dictionary, checked complete against the zh key set. */
+export const tr= {
+  'title': 'Kod',
+  'copy': 'Kopyala',
+  'copied': 'Kopyalandı',
+}

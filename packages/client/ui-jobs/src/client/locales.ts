@@ -43,3 +43,22 @@ export const en: Record<JobKey, string> = {
 
 /** Key domain of the `job` namespace (zh is the source of truth). */
 export type JobKey = keyof typeof zh
+
+/** Turkish dictionary, checked complete against the zh key set. */
+export const tr: Record<JobKey, string>= {
+  'count.live.one': '{count} arka plan görevi çalışıyor',
+  'count.live.other': '{count} arka plan görevi çalışıyor',
+  'count.idle.one': '{count} arka plan görevi',
+  'count.idle.other': '{count} arka plan görevi',
+  'list.aria': 'Arka plan görevleri',
+  'status.running': 'çalışıyor',
+  'status.stopping': 'durduruluyor',
+  'status.completed': 'tamamlandı',
+  'status.killed': 'iptal edildi',
+  'status.failed': 'başarısız',
+  'duration.seconds': '{seconds} sn',
+  'duration.minutes': '{minutes} dk {seconds} sn',
+  'duration.hours': '{hours} sa {minutes} dk',
+  'duration.title.live': '{duration} süredir çalışıyor',
+  'duration.title.done': '{duration} sürdü',
+}

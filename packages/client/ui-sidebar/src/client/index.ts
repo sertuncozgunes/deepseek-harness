@@ -9,9 +9,12 @@ import type {} from '@deepseek-ai/dsh-client-locale/client'
 import type {} from '@deepseek-ai/dsh-client-ui-renderer/client'
 // Type-only: pulls the Session root standard-props merge.
 import type {} from '@deepseek-ai/dsh-client-ui-session/client'
+// Type-only: pulls the theme service merge (ctx.theme) and its change event.
+import type {} from '@deepseek-ai/dsh-client-ui-theme/client'
 import type { SidebarPanelMetadata, SidebarRootInjected } from './contract/slots.ts'
 import { SidebarRoot } from './SidebarRoot.tsx'
-import { en, zh, type SidebarKey } from './locales.ts'
+import { ThemeToggle, type ThemeToggleInjected } from './ThemeToggle.tsx'
+import { tr,  en, zh, type SidebarKey } from './locales.ts'
 
 export type {
   SidebarBrandMarkOwnerProps, SidebarBrandNameOwnerProps, SidebarFooterActionOwnerProps,
@@ -35,14 +38,14 @@ interface WorkspaceNavigation {
 }
 
 /** Services required by the sidebar plugin. */
-export const inject = ['slots', 'layout', 'uiWorkspace', 'locale']
+export const inject = ['slots', 'layout', 'uiWorkspace', 'locale', 'theme']
 
 /** Registers the sidebar shell and its service callbacks.
  * @param ctx - Client root context.
  */
 export function apply(ctx: ClientContext): void {
   const workspaceNavigation = ctx.get('uiWorkspace') as unknown as WorkspaceNavigation
-  ctx.effect(() => ctx.locale.register(NS, { zh, en }), 'ui-sidebar: dictionaries')
+  ctx.effect(() => ctx.locale.register(NS, { zh, en, tr }), 'ui-sidebar: dictionaries')
   const panels = createSnapshotStore<readonly SidebarPanelMetadata[]>([])
   const syncPanels = (): void => {
     const next = ctx.slots.entriesOfSlot('sidebar.panellist').map(({ options }) => {
@@ -81,5 +84,19 @@ export function apply(ctx: ClientContext): void {
     },
     inject: injectProps,
   }, SidebarRoot))
+
+  // Footer quick-toggle: one click flips the resolved color scheme. The face
+  // passes the theme service plus a change subscription; copy rides this
+  // package's locale seat.
+  ctx.slots.inject('sidebar.footer.action', () => ctx.slots.register({
+    name: 'sidebar.footer.action',
+    id: 'theme-toggle',
+    order: 10,
+    locale: NS,
+    inject: (): ThemeToggleInjected => ({
+      theme: ctx.theme,
+      subscribeTheme: fn => ctx.on('theme/change', fn),
+    }),
+  }, ThemeToggle))
   syncPanels()
 }

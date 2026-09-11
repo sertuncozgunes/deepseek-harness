@@ -65,6 +65,21 @@ export function apply(ctx: ClientContext): void {
         'browser.truncated': 'Too many folders to list; only the beginning is shown.',
         'browser.showHidden': 'Show hidden files',
       }],
+      ['tr', {
+        'browser.title': 'Çalışma Alanı Dizini Seç',
+        'browser.home': 'Ana dizin',
+        'browser.newFolder': 'Yeni klasör',
+        'browser.folderName': 'Klasör adı',
+        'browser.createIn': '"{name}" içinde yeni klasör',
+        'browser.untitledFolder': 'Adsız klasör',
+        'browser.create': 'Oluştur',
+        'browser.cancel': 'Vazgeç',
+        'browser.open': 'Aç',
+        'browser.editPath': 'Yolu düzenle',
+        'browser.loading': 'Yükleniyor…',
+        'browser.truncated': 'Listelenecek çok fazla klasör var; yalnızca başlangıç gösteriliyor.',
+        'browser.showHidden': 'Gizli dosyaları göster',
+      }],
     ]
     try {
       for (const [locale, dict] of dictionaries) disposers.push(ctx.locale.register(LOCALE_NS, locale, dict))
