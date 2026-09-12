@@ -1,0 +1,40 @@
+/* Right-pane Notes tab: a full-height editable scratchpad bound to the durable
+ * agent-notes value. Reuses the tab row skin (12/18 body, secondary labels). */
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  height: 100%;
+  min-height: 0;
+}
+
+.hint {
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.textarea {
+  flex: 1;
+  min-height: 0;
+  resize: none;
+  padding: 10px 12px;
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-radius: 8px;
+  background: var(--dsw-alias-surface);
+  color: var(--dsw-alias-label-primary);
+  font-size: 13px;
+  line-height: 20px;
+  font-family: var(--dsw-font-mono, monospace);
+  outline: none;
+}
+
+.textarea:focus {
+  border-color: var(--dsw-alias-accent, var(--dsw-alias-label-secondary));
+}
+
+.titleIcon {
+  flex: none;
+}

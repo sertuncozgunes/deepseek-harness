@@ -51,6 +51,10 @@ export const zh = {
   'help.row.pick': '选择高亮项',
   'help.row.drill': '深入候选项',
   'help.row.closeMenu': '关闭菜单或面板',
+  'notes.title': '笔记',
+  'notes.guide': '跨会话保留的持久便签本',
+  'notes.hint': '在此记录内容，失焦时保存；会话之间保留。',
+  'notes.placeholder': '在这里写下记忆…',
 } satisfies Record<string, string>
 
 /** The command namespace key union. */
@@ -102,6 +106,10 @@ export const en = {
   'help.row.pick': 'Pick the highlighted item',
   'help.row.drill': 'Drill into a candidate',
   'help.row.closeMenu': 'Close a menu or panel',
+  'notes.title': 'Notes',
+  'notes.guide': 'A persistent scratchpad kept across sessions',
+  'notes.hint': 'Write here; saves on blur and persists between sessions.',
+  'notes.placeholder': 'Write memory here…',
 } satisfies Record<CommandKey, string>
 
 /** Turkish dictionary, checked complete against the zh key set. */
@@ -150,4 +158,8 @@ export const tr= {
   'help.row.pick': 'Vurgulanan öğeyi seç',
   'help.row.drill': 'Adaya gir',
   'help.row.closeMenu': 'Menüyü veya paneli kapat',
+  'notes.title': 'Notlar',
+  'notes.guide': 'Oturumlar arası kalan kalıcı not defteri',
+  'notes.hint': 'Buraya yazın; odak kaybolunca kaydedilir ve oturumlar arası korunur.',
+  'notes.placeholder': 'Anılarınızı buraya yazın…',
 } satisfies Record<CommandKey, string>

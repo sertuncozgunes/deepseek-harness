@@ -22,6 +22,8 @@ import { tr,  en, zh, type CommandKey } from './locales.ts'
 import { commandsDefinition, CommandShortcutsTab, CommandShortcutsTabTitle, COMMANDS_ID } from './CommandShortcutsTab.tsx'
 import { CommandPalette } from './CommandPalette.tsx'
 import { ShortcutHelp } from './ShortcutHelp.tsx'
+import { notesDefinition, AgentNotesTab, AgentNotesTabTitle, NOTES_ID } from './AgentNotesTab.tsx'
+import { AGENT_NOTES_NS, type AgentNotesSettings } from '../agent-notes-settings.ts'
 import { COMMAND_FAVORITES_NS, type CommandFavoritesSettings } from '../command-favorites-settings.ts'
 import { COMMAND_RECENT_NS, type CommandRecentSettings } from '../command-recent-settings.ts'
 
@@ -85,6 +87,7 @@ export function apply(ctx: ClientContext): void {
   ctx.inject(['slots', 'sidebarRightTabs', 'settingsScope'], (scope: ClientContext) => {
     const favoritesScope = scope.settingsScope.bind<CommandFavoritesSettings>({ namespace: COMMAND_FAVORITES_NS })
     const recentScope = scope.settingsScope.bind<CommandRecentSettings>({ namespace: COMMAND_RECENT_NS })
+    const notesScope = scope.settingsScope.bind<AgentNotesSettings>({ namespace: AGENT_NOTES_NS })
     scope.effect(() => scope.sidebarRightTabs.register(commandsDefinition(commandsT)), 'ui-commands: commands tab type')
     scope.effect(() => scope.slots.inject('sidebar.right.pane.tab', () => scope.slots.register(
       { name: 'sidebar.right.pane.tab', key: COMMANDS_ID, locale: NS, inject: () => ({ favorites: favoritesScope, recent: recentScope }) },
@@ -94,6 +97,17 @@ export function apply(ctx: ClientContext): void {
       { name: 'sidebar.right.pane.tab.title', key: COMMANDS_ID },
       CommandShortcutsTabTitle,
     )), 'ui-commands: commands tab title')
+
+    // Right-pane Notes tab: an editable persistent scratchpad over agent-notes.
+    scope.effect(() => scope.sidebarRightTabs.register(notesDefinition(commandsT)), 'ui-commands: notes tab type')
+    scope.effect(() => scope.slots.inject('sidebar.right.pane.tab', () => scope.slots.register(
+      { name: 'sidebar.right.pane.tab', key: NOTES_ID, locale: NS, inject: () => ({ notes: notesScope }) },
+      AgentNotesTab,
+    )), 'ui-commands: notes tab body')
+    scope.effect(() => scope.slots.inject('sidebar.right.pane.tab.title', () => scope.slots.register(
+      { name: 'sidebar.right.pane.tab.title', key: NOTES_ID },
+      AgentNotesTabTitle,
+    )), 'ui-commands: notes tab title')
   })
 
   // Global ⌘K command palette on the frame-wide overlay seat. The palette reads
