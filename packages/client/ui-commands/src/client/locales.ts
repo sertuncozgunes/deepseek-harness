@@ -44,6 +44,13 @@ export const zh = {
   'palette.title': '命令面板',
   'palette.placeholder': '搜索命令…',
   'palette.empty': '没有匹配的命令',
+  'help.title': '键盘快捷键',
+  'help.row.openPalette': '打开命令面板',
+  'help.row.openHelp': '打开本帮助',
+  'help.row.navigate': '在菜单中移动',
+  'help.row.pick': '选择高亮项',
+  'help.row.drill': '深入候选项',
+  'help.row.closeMenu': '关闭菜单或面板',
 } satisfies Record<string, string>
 
 /** The command namespace key union. */
@@ -88,6 +95,13 @@ export const en = {
   'palette.title': 'Command palette',
   'palette.placeholder': 'Search commands…',
   'palette.empty': 'No matching commands',
+  'help.title': 'Keyboard shortcuts',
+  'help.row.openPalette': 'Open the command palette',
+  'help.row.openHelp': 'Open this help',
+  'help.row.navigate': 'Move within a menu',
+  'help.row.pick': 'Pick the highlighted item',
+  'help.row.drill': 'Drill into a candidate',
+  'help.row.closeMenu': 'Close a menu or panel',
 } satisfies Record<CommandKey, string>
 
 /** Turkish dictionary, checked complete against the zh key set. */
@@ -129,4 +143,11 @@ export const tr= {
   'palette.title': 'Komut paneli',
   'palette.placeholder': 'Komut ara…',
   'palette.empty': 'Eşleşen komut yok',
+  'help.title': 'Klavye kısayolları',
+  'help.row.openPalette': 'Komut paneline aç',
+  'help.row.openHelp': 'Bu yardımı aç',
+  'help.row.navigate': 'Menü içinde gezin',
+  'help.row.pick': 'Vurgulanan öğeyi seç',
+  'help.row.drill': 'Adaya gir',
+  'help.row.closeMenu': 'Menüyü veya paneli kapat',
 } satisfies Record<CommandKey, string>

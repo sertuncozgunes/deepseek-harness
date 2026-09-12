@@ -21,6 +21,7 @@ import { PopupSelectView } from './PopupSelectView.tsx'
 import { tr,  en, zh, type CommandKey } from './locales.ts'
 import { commandsDefinition, CommandShortcutsTab, CommandShortcutsTabTitle, COMMANDS_ID } from './CommandShortcutsTab.tsx'
 import { CommandPalette } from './CommandPalette.tsx'
+import { ShortcutHelp } from './ShortcutHelp.tsx'
 import { COMMAND_FAVORITES_NS, type CommandFavoritesSettings } from '../command-favorites-settings.ts'
 import { COMMAND_RECENT_NS, type CommandRecentSettings } from '../command-recent-settings.ts'
 
@@ -106,5 +107,13 @@ export function apply(ctx: ClientContext): void {
       locale: NS,
       inject: (): { commandUi: typeof scope.commandUi } => ({ commandUi: scope.commandUi }),
     }, CommandPalette))
+
+    // Keyboard-shortcuts help, opened by Meta+/ — a pure locale-surface overlay.
+    scope.slots.inject('shell.overlay', () => scope.slots.register({
+      name: 'shell.overlay',
+      id: 'shortcut-help',
+      order: 91,
+      locale: NS,
+    }, ShortcutHelp))
   })
 }
