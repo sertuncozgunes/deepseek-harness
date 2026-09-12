@@ -55,6 +55,8 @@ export const zh = {
   'notes.guide': '跨会话保留的持久便签本',
   'notes.hint': '在此记录内容，失焦时保存；会话之间保留。',
   'notes.placeholder': '在这里写下记忆…',
+  'note.label': '记笔记',
+  'note.description': '给便签本追加一条检查点',
 } satisfies Record<string, string>
 
 /** The command namespace key union. */
@@ -110,6 +112,8 @@ export const en = {
   'notes.guide': 'A persistent scratchpad kept across sessions',
   'notes.hint': 'Write here; saves on blur and persists between sessions.',
   'notes.placeholder': 'Write memory here…',
+  'note.label': 'Add a note',
+  'note.description': 'Append a checkpoint to the scratchpad',
 } satisfies Record<CommandKey, string>
 
 /** Turkish dictionary, checked complete against the zh key set. */
@@ -162,4 +166,6 @@ export const tr= {
   'notes.guide': 'Oturumlar arası kalan kalıcı not defteri',
   'notes.hint': 'Buraya yazın; odak kaybolunca kaydedilir ve oturumlar arası korunur.',
   'notes.placeholder': 'Anılarınızı buraya yazın…',
+  'note.label': 'Not ekle',
+  'note.description': 'Not defterine bir kontrol noktası ekle',
 } satisfies Record<CommandKey, string>

@@ -98,8 +98,10 @@ describe('apply', () => {
     onTestFinished(() => fiber.dispose())
     const source = sources.get('/ command')!
     const req = { query: '', position: 'leading' as const, drilled: false, signal: new AbortController().signal }
-    expect(await source.candidates({ sessionId: sid('s1') }, req)).toEqual([])
-    expect(await source.candidates({ sessionId: sid('child') }, req)).toEqual([])
+    // The /note contribution is the only command available when the host
+    // catalog is empty; it is session-agnostic so it also lists on a child.
+    expect((await source.candidates({ sessionId: sid('s1') }, req)).map(c => c.name)).toEqual(['note'])
+    expect((await source.candidates({ sessionId: sid('child') }, req)).map(c => c.name)).toEqual(['note'])
   })
 
   it('the overlay inject resolves the per-session popup controller by sessionId and fails loud on an unknown id', async () => {

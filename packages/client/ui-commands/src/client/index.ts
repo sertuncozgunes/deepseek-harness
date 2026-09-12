@@ -68,6 +68,16 @@ export function apply(ctx: ClientContext): void {
   ctx.inject(['slots', 'commandUi', 'sessions'], (scope: ClientContext) => {
     const command = scope.commandUi
     const sessions = scope.get('sessions') as ISessions
+    // Single-command workflow: `/note` appends a timestamped checkpoint to the
+    // durable agent-notes scratchpad with one bare invocation.
+    scope.effect(() => command.register({
+      name: 'note',
+      label: () => scope.locale.bind(NS)('note.label'),
+      description: () => scope.locale.bind(NS)('note.description'),
+      available: () => true,
+      ui: { kind: 'action', run: () => { command.appendNote('session checkpoint') } },
+    }), 'ui-commands: /note workflow')
+
     scope.slots.inject('conversation.input.overlay', () => scope.slots.register({
       name: 'conversation.input.overlay',
       id: 'command-popup',

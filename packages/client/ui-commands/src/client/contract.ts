@@ -115,4 +115,6 @@ export interface CommandUiContract {
    * global-palette routing path); true when the scoped input was reachable.
    */
   insertCommandText(sessionId: import('@deepseek-ai/dsh-session/types').SessionId, text: string): boolean
+  /** Append a timestamped line to the durable agent-notes value (`/note`). */
+  appendNote(text: string): void
 }

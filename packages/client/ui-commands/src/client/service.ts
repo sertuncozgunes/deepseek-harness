@@ -34,6 +34,7 @@ import {
 import {
   COMMAND_RECENT_FIELD, COMMAND_RECENT_MAX, COMMAND_RECENT_NS, type CommandRecentSettings,
 } from '../command-recent-settings.ts'
+import { AGENT_NOTES_FIELD, AGENT_NOTES_NS, type AgentNotesSettings } from '../agent-notes-settings.ts'
 import type { CommandDescriptor } from './directory.ts'
 import { CommandDirectory } from './directory.ts'
 import { PopupSelectController } from './popup.ts'
@@ -86,6 +87,8 @@ export class CommandUiRuntime extends Service implements CommandUiContract {
   private recentSettings!: SettingsScope<CommandRecentSettings>
   /** Recent command names, most recent first. */
   private recent: string[] = []
+  /** Durable agent-notes scope (assigned in the constructor; the /note workflow writes it). */
+  public notesSettings!: SettingsScope<AgentNotesSettings>
 
   /**
    * @param ctx - owning root context (plugin fiber; the service registers
@@ -122,6 +125,9 @@ export class CommandUiRuntime extends Service implements CommandUiContract {
     ctx.effect(() => this.recentSettings.subscribe(() => {
       this.recent = this.recentSettings.getSnapshot().value?.recent ?? []
     }), 'ui-commands: recent scope adoption')
+
+    // Durable agent-notes scope: the /note workflow and the Notes tab share it.
+    this.notesSettings = ctx.settingsScope.bind<AgentNotesSettings>({ namespace: AGENT_NOTES_NS })
 
     // Recent group renders before favorites (order -2); its candidates are the
     // most recently executed commands, excluding any that are already pinned
@@ -295,6 +301,21 @@ export class CommandUiRuntime extends Service implements CommandUiContract {
     }
     this.focusHooks.get(sessionId)?.()
     return actx !== undefined
+  }
+
+  /**
+   * Append a timestamped line to the durable agent-notes value. This is the
+   * single-command workflow (`/note`): one client action that stages and writes
+   * a memory record through the notes settings scope.
+   * @param text - the note body (trimmed; empty notes are dropped).
+   */
+  appendNote(text: string): void {
+    const body = text.trim()
+    if (body === '') return
+    const stamp = new Date().toISOString()
+    const current = this.notesSettings.getSnapshot().value?.notes ?? ''
+    const next = current === '' ? `- ${stamp}: ${body}` : `${current}\n- ${stamp}: ${body}`
+    void this.notesSettings.set(AGENT_NOTES_FIELD, next)
   }
 
   /** Record one executed command at the front of the recency list (deduped, capped). */

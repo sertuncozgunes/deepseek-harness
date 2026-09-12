@@ -102,9 +102,11 @@ async function bench(opts: BenchOptions = {}) {
   // Durable settings scopes: in-memory sections keyed by namespace + fan-out.
   const favoritesSection: { favorites?: string[] } = {}
   const recentSection: { recent?: string[] } = {}
-  const sections: Record<string, { favorites?: string[]; recent?: string[] }> = {
+  const notesSection: { notes?: string } = {}
+  const sections: Record<string, { favorites?: string[]; recent?: string[]; notes?: string }> = {
     'command-favorites': favoritesSection,
     'command-recent': recentSection,
+    'agent-notes': notesSection,
   }
   const settingsSubs = new Map<string, Array<() => void>>()
   ctx.provide('settingsScope', {
@@ -177,7 +179,7 @@ async function bench(opts: BenchOptions = {}) {
   if (recentSource === undefined) throw new Error('recent source not registered')
   return {
     ctx, fiber, command, source, favoritesSource, recentSource, mint, warm, listCalls, executeCalls,
-    executions, registered, notices, remote, favoritesSection, recentSection,
+    executions, registered, notices, remote, favoritesSection, recentSection, notesSection,
   }
 }
 
@@ -292,6 +294,27 @@ describe('command recent', () => {
     await b.source.matchEnter!(session, '/plan', new AbortController().signal, { attachments: 0 })
     menuPick(b.recentSource, 'plan', session, 5)
     expect(b.executeCalls.some(c => c.sessionId === sid('s1') && c.line === '/plan')).toBe(true)
+  })
+})
+
+describe('command note workflow', () => {
+  it('appendNote stamps and appends to the durable notes scope', async () => {
+    const b = await bench()
+    b.command.appendNote('ship the release')
+    expect(b.notesSection.notes).toMatch(/^- \d{4}-\d{2}-\d{2}T.*: ship the release$/)
+  })
+
+  it('appendNote drops empty bodies and preserves existing notes', async () => {
+    const b = await bench()
+    b.command.appendNote('first')
+    const afterFirst = b.notesSection.notes!
+    b.command.appendNote('   ')
+    expect(b.notesSection.notes).toBe(afterFirst)
+    b.command.appendNote('second')
+    const lines = b.notesSection.notes!.split('\n')
+    expect(lines).toHaveLength(2)
+    expect(lines[0]).toContain('first')
+    expect(lines[1]).toContain('second')
   })
 })
 
