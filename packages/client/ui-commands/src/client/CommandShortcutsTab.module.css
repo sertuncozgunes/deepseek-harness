@@ -1,0 +1,100 @@
+/* Right-pane Commands tab: an in-flow panel reusing the tab row skin — 12/18
+ * body, tertiary/secondary label pairs, hairline section headings. Rows are
+ * static command references (no interactive pick) with a favorite unpin
+ * affordance that rides the same durable scope the / menu writes. */
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 16px;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--dsw-alias-label-secondary);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+/* Section heading row: name left, no trailing value. */
+.sectionTitle {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  color: var(--dsw-alias-label-primary);
+  font-weight: 500;
+}
+
+.titleLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.titleLabel svg {
+  width: 14px;
+  height: 14px;
+  flex: none;
+}
+
+/* Unordered command list; each row is a name plus an optional trailing affordance. */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 4px 6px;
+  min-width: 0;
+  border-radius: 6px;
+}
+
+.rowName {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--dsw-alias-label-secondary);
+  font-family: var(--dsw-font-mono, monospace);
+}
+
+/* Unpin affordance mirrors the menu pin glyph; click writes the durable scope. */
+.unpin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  border: none;
+  padding: 2px;
+  background: none;
+  color: var(--dsw-alias-label-tertiary);
+  cursor: pointer;
+}
+
+.unpin:hover {
+  color: var(--dsw-alias-label-secondary);
+}
+
+.empty {
+  padding: 16px;
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.titleIcon {
+  flex: none;
+}

@@ -19,6 +19,9 @@ import { CommandUiRuntime } from './service.ts'
 import type { PopupSelectInjected } from './PopupSelectView.tsx'
 import { PopupSelectView } from './PopupSelectView.tsx'
 import { tr,  en, zh, type CommandKey } from './locales.ts'
+import { commandsDefinition, CommandShortcutsTab, CommandShortcutsTabTitle, COMMANDS_ID } from './CommandShortcutsTab.tsx'
+import { COMMAND_FAVORITES_NS, type CommandFavoritesSettings } from '../command-favorites-settings.ts'
+import { COMMAND_RECENT_NS, type CommandRecentSettings } from '../command-recent-settings.ts'
 
 export { CommandUiRuntime } from './service.ts'
 export { CommandDirectory } from './directory.ts'
@@ -72,5 +75,22 @@ export function apply(ctx: ClientContext): void {
         return { popup: command.popupFor(actx) }
       },
     }, PopupSelectView))
+  })
+
+  // Right-pane Commands tab: a persistent glanceable list of pinned favorites
+  // and recent commands, reading the same durable scopes the / menu writes.
+  const commandsT = ctx.locale.bind(NS)
+  ctx.inject(['slots', 'sidebarRightTabs', 'settingsScope'], (scope: ClientContext) => {
+    const favoritesScope = scope.settingsScope.bind<CommandFavoritesSettings>({ namespace: COMMAND_FAVORITES_NS })
+    const recentScope = scope.settingsScope.bind<CommandRecentSettings>({ namespace: COMMAND_RECENT_NS })
+    scope.effect(() => scope.sidebarRightTabs.register(commandsDefinition(commandsT)), 'ui-commands: commands tab type')
+    scope.effect(() => scope.slots.inject('sidebar.right.pane.tab', () => scope.slots.register(
+      { name: 'sidebar.right.pane.tab', key: COMMANDS_ID, locale: NS, inject: () => ({ favorites: favoritesScope, recent: recentScope }) },
+      CommandShortcutsTab,
+    )), 'ui-commands: commands tab body')
+    scope.effect(() => scope.slots.inject('sidebar.right.pane.tab.title', () => scope.slots.register(
+      { name: 'sidebar.right.pane.tab.title', key: COMMANDS_ID },
+      CommandShortcutsTabTitle,
+    )), 'ui-commands: commands tab title')
   })
 }

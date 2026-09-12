@@ -35,6 +35,12 @@ export const zh = {
   'overlay.aria': '/{command} 选项',
   'listbox.aria': '/{command} 匹配项',
   'notice.attachmentsUnsupported': '/{command} 不接受附件，请先移除附件',
+  'tab.title': '命令',
+  'tab.guide': '固定的收藏与最近使用的命令',
+  'tab.favorites': '收藏',
+  'tab.recent': '最近使用',
+  'tab.empty': '还没有收藏或最近使用的命令。在输入框中使用 / 命令后会出现在这里。',
+  'tab.unpin': '取消收藏命令 {name}',
 } satisfies Record<string, string>
 
 /** The command namespace key union. */
@@ -70,6 +76,12 @@ export const en = {
   'overlay.aria': '/{command} options',
   'listbox.aria': '/{command} matches',
   'notice.attachmentsUnsupported': '/{command} does not accept attachments; remove them first',
+  'tab.title': 'Commands',
+  'tab.guide': 'Pinned favorites and recently used commands',
+  'tab.favorites': 'Favorites',
+  'tab.recent': 'Recent',
+  'tab.empty': 'No favorite or recent commands yet. Use a / command in the composer and it will appear here.',
+  'tab.unpin': 'Unpin command {name}',
 } satisfies Record<CommandKey, string>
 
 /** Turkish dictionary, checked complete against the zh key set. */
@@ -102,4 +114,10 @@ export const tr= {
   'overlay.aria': '/{command} seçenekleri',
   'listbox.aria': '/{command} eşleşmeleri',
   'notice.attachmentsUnsupported': '/{command} ek kabul etmiyor; önce ekleri kaldırın',
+  'tab.title': 'Komutlar',
+  'tab.guide': 'Sabitlenmiş favoriler ve son kullanılan komutlar',
+  'tab.favorites': 'Favoriler',
+  'tab.recent': 'Son kullanılanlar',
+  'tab.empty': 'Henüz favori ya da son kullanılan komut yok. Besteciye bir / komutu yazın, burada görünsün.',
+  'tab.unpin': 'Komutun sabitlemesini kaldır: {name}',
 } satisfies Record<CommandKey, string>

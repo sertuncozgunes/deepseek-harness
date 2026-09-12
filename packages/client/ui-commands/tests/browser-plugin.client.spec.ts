@@ -48,9 +48,19 @@ async function bench() {
   // the Remote face needs `$on` even where this spec dispatches none.
   ctx.provide('remote', { commands: commandsRemote, $on: () => () => {} })
   ctx.provide('remote.commands', commandsRemote)
+  // Right-pane tab registry: a minimal face the commands tab registers into.
+  ctx.provide('sidebarRightTabs', {
+    register: () => () => {},
+    subscribe: () => () => {},
+    getSnapshot: () => [],
+  } as never)
   await ctx.plugin(SlotRegistry).await()
   ctx.slots.register({
-    name: 'root', children: { 'conversation.input.overlay': { kind: 'list', scope: 'session' } },
+    name: 'root', children: {
+      'conversation.input.overlay': { kind: 'list', scope: 'session' },
+      'sidebar.right.pane.tab': { kind: 'keyed', scope: 'session' },
+      'sidebar.right.pane.tab.title': { kind: 'keyed', scope: 'session' },
+    },
   } as never, (() => null) as never)
   ctx.provide('locale', new LocaleRuntime(ctx))
   const fiber = ctx.plugin({ inject: [...inject], apply })
