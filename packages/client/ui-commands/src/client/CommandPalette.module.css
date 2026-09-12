@@ -1,0 +1,102 @@
+/* ⌘K command palette: a frame-wide centered overlay (mask + panel) above every
+ * column, reusing the dialog skin. The panel is compact, search-led, and its
+ * rows mirror the / menu's name-label-description rhythm. */
+
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 16vh;
+}
+
+.mask {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.panel {
+  position: relative;
+  width: min(560px, calc(100vw - 32px));
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid var(--dsw-alias-border-l2);
+  background: var(--dsw-alias-surface-elevated, var(--dsw-alias-surface));
+  box-shadow: var(--dsw-alias-shadow-modal, 0 24px 48px rgba(0, 0, 0, 0.28));
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--dsw-alias-border-l2);
+}
+
+.searchIcon {
+  flex: none;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: none;
+  color: var(--dsw-alias-label-primary);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.list {
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.rowActive {
+  background: var(--dsw-alias-surface-hover);
+}
+
+.rowIcon {
+  flex: none;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.rowLabel {
+  flex: none;
+  color: var(--dsw-alias-label-primary);
+  font-family: var(--dsw-font-mono, monospace);
+  font-size: 13px;
+}
+
+.rowDescription {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--dsw-alias-label-secondary);
+  font-size: 12px;
+}
+
+.emptyRow {
+  padding: 12px 10px;
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 12px;
+}

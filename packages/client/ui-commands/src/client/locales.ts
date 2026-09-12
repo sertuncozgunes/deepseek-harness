@@ -41,6 +41,9 @@ export const zh = {
   'tab.recent': '最近使用',
   'tab.empty': '还没有收藏或最近使用的命令。在输入框中使用 / 命令后会出现在这里。',
   'tab.unpin': '取消收藏命令 {name}',
+  'palette.title': '命令面板',
+  'palette.placeholder': '搜索命令…',
+  'palette.empty': '没有匹配的命令',
 } satisfies Record<string, string>
 
 /** The command namespace key union. */
@@ -82,6 +85,9 @@ export const en = {
   'tab.recent': 'Recent',
   'tab.empty': 'No favorite or recent commands yet. Use a / command in the composer and it will appear here.',
   'tab.unpin': 'Unpin command {name}',
+  'palette.title': 'Command palette',
+  'palette.placeholder': 'Search commands…',
+  'palette.empty': 'No matching commands',
 } satisfies Record<CommandKey, string>
 
 /** Turkish dictionary, checked complete against the zh key set. */
@@ -120,4 +126,7 @@ export const tr= {
   'tab.recent': 'Son kullanılanlar',
   'tab.empty': 'Henüz favori ya da son kullanılan komut yok. Besteciye bir / komutu yazın, burada görünsün.',
   'tab.unpin': 'Komutun sabitlemesini kaldır: {name}',
+  'palette.title': 'Komut paneli',
+  'palette.placeholder': 'Komut ara…',
+  'palette.empty': 'Eşleşen komut yok',
 } satisfies Record<CommandKey, string>

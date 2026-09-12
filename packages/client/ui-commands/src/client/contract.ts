@@ -110,4 +110,9 @@ export interface CommandUiContract {
   decorate(decoration: CommandDecoration): () => void
   /** Resolve the per-session popup controller for one session scope (wiring/overlay layer). */
   popupFor(actx: ClientContext): unknown
+  /**
+   * Focus one session's composer and insert a pre-filled command line (the
+   * global-palette routing path); true when the scoped input was reachable.
+   */
+  insertCommandText(sessionId: import('@deepseek-ai/dsh-session/types').SessionId, text: string): boolean
 }

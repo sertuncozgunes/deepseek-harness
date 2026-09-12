@@ -279,6 +279,24 @@ export class CommandUiRuntime extends Service implements CommandUiContract {
     void this.settings.set(COMMAND_FAVORITES_FIELD, next)
   }
 
+  /**
+   * Focus one session's composer and insert a pre-filled command line through
+   * the scoped input event. This is the global-palette routing path: it keeps
+   * execution inside the existing slash pipeline rather than duplicating the
+   * dispatch decision table.
+   * @param sessionId - the session whose composer receives the text.
+   * @param text - the full line to insert (e.g. `/plan `).
+   * @returns true when the scoped input was reachable.
+   */
+  insertCommandText(sessionId: SessionId, text: string): boolean {
+    const actx = this.scopeFor(sessionId)
+    if (actx !== undefined) {
+      actx.bail(actx, 'slash/input-insert-text', { text, span: { start: 0, end: 0, draftRev: 0 } })
+    }
+    this.focusHooks.get(sessionId)?.()
+    return actx !== undefined
+  }
+
   /** Record one executed command at the front of the recency list (deduped, capped). */
   private recordRecent(name: string): void {
     // Update the local mirror optimistically so consecutive executions in the

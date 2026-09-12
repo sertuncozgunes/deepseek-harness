@@ -20,6 +20,7 @@ import type { PopupSelectInjected } from './PopupSelectView.tsx'
 import { PopupSelectView } from './PopupSelectView.tsx'
 import { tr,  en, zh, type CommandKey } from './locales.ts'
 import { commandsDefinition, CommandShortcutsTab, CommandShortcutsTabTitle, COMMANDS_ID } from './CommandShortcutsTab.tsx'
+import { CommandPalette } from './CommandPalette.tsx'
 import { COMMAND_FAVORITES_NS, type CommandFavoritesSettings } from '../command-favorites-settings.ts'
 import { COMMAND_RECENT_NS, type CommandRecentSettings } from '../command-recent-settings.ts'
 
@@ -92,5 +93,18 @@ export function apply(ctx: ClientContext): void {
       { name: 'sidebar.right.pane.tab.title', key: COMMANDS_ID },
       CommandShortcutsTabTitle,
     )), 'ui-commands: commands tab title')
+  })
+
+  // Global ⌘K command palette on the frame-wide overlay seat. The palette reads
+  // the active session from the root standard share (useSessions) and routes a
+  // picked command back through commandUi.insertCommandText.
+  ctx.inject(['slots', 'commandUi'], (scope: ClientContext) => {
+    scope.slots.inject('shell.overlay', () => scope.slots.register({
+      name: 'shell.overlay',
+      id: 'command-palette',
+      order: 90,
+      locale: NS,
+      inject: (): { commandUi: typeof scope.commandUi } => ({ commandUi: scope.commandUi }),
+    }, CommandPalette))
   })
 }
