@@ -20,6 +20,12 @@ export const zh = {
   'duration.hours': '{hours}小时{minutes}分',
   'duration.title.live': '已运行 {duration}',
   'duration.title.done': '耗时 {duration}',
+  'tab.title': '活动',
+  'tab.guide': '此会话的后台任务、子智能体与当前目标',
+  'tab.jobs': '后台任务',
+  'tab.subagents': '子智能体',
+  'tab.goal': '目标',
+  'tab.empty': '此会话当前没有后台任务、子智能体或活动目标。',
 } as const
 
 /** English dictionary, key-identical to the Chinese source of truth. */
@@ -39,6 +45,12 @@ export const en: Record<JobKey, string> = {
   'duration.hours': '{hours}h {minutes}m',
   'duration.title.live': 'Running for {duration}',
   'duration.title.done': 'Took {duration}',
+  'tab.title': 'Activity',
+  'tab.guide': 'This session\u2019s background jobs, subagents, and current goal',
+  'tab.jobs': 'Background jobs',
+  'tab.subagents': 'Subagents',
+  'tab.goal': 'Goal',
+  'tab.empty': 'This session has no background jobs, subagents, or active goal right now.',
 }
 
 /** Key domain of the `job` namespace (zh is the source of truth). */
@@ -61,4 +73,10 @@ export const tr: Record<JobKey, string>= {
   'duration.hours': '{hours} sa {minutes} dk',
   'duration.title.live': '{duration} süredir çalışıyor',
   'duration.title.done': '{duration} sürdü',
+  'tab.title': 'Etkinlik',
+  'tab.guide': 'Bu oturumun arka plan görevleri, alt ajanları ve geçerli hedefi',
+  'tab.jobs': 'Arka plan görevleri',
+  'tab.subagents': 'Alt ajanlar',
+  'tab.goal': 'Hedef',
+  'tab.empty': 'Bu oturumda şu an arka plan görevi, alt ajan veya etkin hedef yok.',
 }

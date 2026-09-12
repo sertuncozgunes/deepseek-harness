@@ -6,6 +6,7 @@
  */
 import type { Context as ClientContext } from '@deepseek-ai/cordis'
 import { JobListAction } from './JobListAction.tsx'
+import { activityDefinition, ActivityTab, ActivityTabTitle, ACTIVITY_ID } from './ActivityTab.tsx'
 import type {} from '@deepseek-ai/dsh-client-locale/client'
 import type {} from '@deepseek-ai/dsh-client-ui-renderer/client'
 import type {} from '@deepseek-ai/dsh-client-ui-session/client'
@@ -39,4 +40,19 @@ export function apply(ctx: ClientContext): void {
       locale: NS,
     }, JobListAction),
   )
+
+  // Right-pane Activity tab: the persistent, in-flow twin of the header action,
+  // combining this session's jobs, subagents, and goal from the live mirrors.
+  const jobT = ctx.locale.bind(NS)
+  ctx.inject(['slots', 'sidebarRightTabs'], (scope: ClientContext) => {
+    scope.effect(() => scope.sidebarRightTabs.register(activityDefinition(jobT)), 'ui-jobs: activity tab type')
+    scope.effect(() => scope.slots.inject('sidebar.right.pane.tab', () => scope.slots.register(
+      { name: 'sidebar.right.pane.tab', key: ACTIVITY_ID, locale: NS },
+      ActivityTab,
+    )), 'ui-jobs: activity tab body')
+    scope.effect(() => scope.slots.inject('sidebar.right.pane.tab.title', () => scope.slots.register(
+      { name: 'sidebar.right.pane.tab.title', key: ACTIVITY_ID },
+      ActivityTabTitle,
+    )), 'ui-jobs: activity tab title')
+  })
 }

@@ -1,0 +1,82 @@
+/* Right-pane Activity tab: the in-flow "what's happening now" panel — jobs,
+ * subagents, and the active goal — reusing the tab row skin (12/18 body,
+ * tertiary/secondary labels, hairline section headings, status dots). */
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 16px;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--dsw-alias-label-secondary);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.sectionTitle {
+  color: var(--dsw-alias-label-primary);
+  font-weight: 500;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  min-width: 0;
+  border-radius: 6px;
+}
+
+.dot {
+  flex: none;
+}
+
+.name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--dsw-alias-label-secondary);
+}
+
+/* Trailing secondary annotation: job kind, subagent mode, reason. */
+.meta {
+  flex: none;
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 11px;
+}
+
+/* Goal block mirrors a row but carries a wider objective line. */
+.goal {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+}
+
+.empty {
+  padding: 16px;
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.titleIcon {
+  flex: none;
+}

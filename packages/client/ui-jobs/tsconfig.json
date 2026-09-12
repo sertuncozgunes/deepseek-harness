@@ -30,7 +30,16 @@
       "path": "../ui-session"
     },
     {
+      "path": "../ui-sidebar-right"
+    },
+    {
       "path": "../ui-slots"
+    },
+    {
+      "path": "../../subagent/subagent"
+    },
+    {
+      "path": "../../goal/goal"
     }
   ]
 }
